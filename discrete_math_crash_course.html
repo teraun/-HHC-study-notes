@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discrete Mathematics — Crash Course</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121f;
+    --bg3: #1a1a2e;
+    --blue: #00d4ff;
+    --green: #00ff88;
+    --red: #ff4455;
+    --yellow: #ffcc00;
+    --purple: #cc88ff;
+    --orange: #ff8800;
+    --pink: #ff66aa;
+    --text: #e0e0e0;
+    --muted: #888;
+    --border: #222;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); font-size:15px; line-height:1.7; }
+
+  /* NAV */
+  .sidenav {
+    position:fixed; top:0; left:0; height:100vh; width:220px;
+    background:var(--bg2); border-right:1px solid var(--border);
+    overflow-y:auto; z-index:100; padding:16px 0;
+  }
+  .sidenav-title { color:var(--blue); font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:0 16px 10px; border-bottom:1px solid var(--border); margin-bottom:8px; }
+  .nav-unit { padding:6px 16px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:10px; }
+  .nav-link { display:block; padding:7px 16px 7px 24px; font-size:13px; color:#bbb; text-decoration:none; border-left:3px solid transparent; transition:all .15s; }
+  .nav-link:hover, .nav-link.active { color:#fff; border-left-color:var(--blue); background:rgba(0,212,255,.06); }
+  .nav-link.u2 { border-left-color:transparent; }
+  .nav-link.u2:hover, .nav-link.u2.active { border-left-color:var(--green); background:rgba(0,255,136,.06); }
+  .nav-link.u3:hover, .nav-link.u3.active { border-left-color:var(--purple); background:rgba(204,136,255,.06); }
+  .nav-link.u4:hover, .nav-link.u4.active { border-left-color:var(--orange); background:rgba(255,136,0,.06); }
+
+  /* MAIN */
+  .main { margin-left:220px; padding:28px 32px; max-width:1100px; }
+
+  /* HEADER */
+  .hero {
+    background:linear-gradient(135deg,#0d0d2a,#1a0a2e);
+    border:1px solid var(--blue); border-radius:14px;
+    padding:32px; margin-bottom:28px; text-align:center;
+  }
+  .hero h1 { color:var(--blue); font-size:26px; letter-spacing:3px; margin-bottom:6px; }
+  .hero p { color:var(--muted); font-size:13px; }
+  .hero .badges { margin-top:14px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .badge { padding:4px 14px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:.5px; }
+  .b-blue  { background:rgba(0,212,255,.15); color:var(--blue); border:1px solid rgba(0,212,255,.3); }
+  .b-green { background:rgba(0,255,136,.15); color:var(--green); border:1px solid rgba(0,255,136,.3); }
+  .b-purple{ background:rgba(204,136,255,.15); color:var(--purple); border:1px solid rgba(204,136,255,.3); }
+  .b-red   { background:rgba(255,68,85,.15); color:var(--red); border:1px solid rgba(255,68,85,.3); }
+
+  /* SECTION HEADERS */
+  .unit-header {
+    display:flex; align-items:center; gap:14px;
+    padding:18px 24px; border-radius:12px; margin-bottom:20px; margin-top:36px;
+  }
+  .unit-header.u1 { background:linear-gradient(135deg,#0d1a2e,#0a1020); border:1px solid rgba(0,212,255,.4); }
+  .unit-header.u2 { background:linear-gradient(135deg,#0a1f14,#061209); border:1px solid rgba(0,255,136,.4); }
+  .unit-header.u3 { background:linear-gradient(135deg,#1a0d2e,#100a20); border:1px solid rgba(204,136,255,.4); }
+  .unit-header.u4 { background:linear-gradient(135deg,#1f1200,#120a00); border:1px solid rgba(255,136,0,.4); }
+  .unit-num { font-size:32px; font-weight:700; }
+  .u1 .unit-num { color:var(--blue); }
+  .u2 .unit-num { color:var(--green); }
+  .u3 .unit-num { color:var(--purple); }
+  .u4 .unit-num { color:var(--orange); }
+  .unit-header h2 { font-size:18px; letter-spacing:1px; }
+  .unit-header p { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  /* CARDS */
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+  .full { grid-column:1/-1; }
+
+  .card { background:var(--bg3); border-radius:10px; padding:18px; border-left:4px solid var(--blue); }
+  .card.green  { border-left-color:var(--green); }
+  .card.red    { border-left-color:var(--red); }
+  .card.yellow { border-left-color:var(--yellow); }
+  .card.purple { border-left-color:var(--purple); }
+  .card.orange { border-left-color:var(--orange); }
+  .card.pink   { border-left-color:var(--pink); }
+  .card.dim    { border-left-color:#444; }
+
+  .card h3 { font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; color:var(--blue); }
+  .card.green  h3 { color:var(--green); }
+  .card.red    h3 { color:var(--red); }
+  .card.yellow h3 { color:var(--yellow); }
+  .card.purple h3 { color:var(--purple); }
+  .card.orange h3 { color:var(--orange); }
+  .card.pink   h3 { color:var(--pink); }
+
+  /* FORMULA BOXES */
+  .formula {
+    background:#0a0a14; border:1px solid #333; border-radius:6px;
+    padding:10px 14px; margin:8px 0;
+    font-family:'Courier New',monospace; font-size:14px; color:#fff;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  .formula.hl  { border-color:var(--blue); background:#001a2a; color:var(--blue); font-size:15px; font-weight:700; }
+  .formula.ghl { border-color:var(--green); background:#001a0d; color:var(--green); }
+  .formula.rhl { border-color:var(--red); background:#1a000a; color:#ff8899; }
+  .formula.yhl { border-color:var(--yellow); background:#1a1400; color:var(--yellow); }
+  .formula.phl { border-color:var(--purple); background:#150a1f; color:var(--purple); }
+
+  /* STEPS */
+  .step { background:#111; border-left:3px solid #444; padding:8px 12px; margin:4px 0; border-radius:0 6px 6px 0; font-size:13px; color:#ccc; }
+  .step strong { color:#fff; }
+  .step.done { border-left-color:var(--green); }
+  .step.key  { border-left-color:var(--blue); }
+
+  /* WARN / TIP */
+  .warn { background:#1a1000; border:1px solid var(--yellow); border-radius:6px; padding:9px 13px; margin:8px 0; font-size:13px; color:#ffdd88; }
+  .tip  { background:#001a10; border:1px solid var(--green); border-radius:6px; padding:9px 13px; margin:8px 0; font-size:13px; color:#88ffcc; }
+  .danger { background:#1a0008; border:1px solid var(--red); border-radius:6px; padding:9px 13px; margin:8px 0; font-size:13px; color:#ff99aa; }
+
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:13px; }
+  th { background:#0d0d1a; color:var(--blue); padding:8px 10px; text-align:left; border:1px solid #2a2a40; }
+  td { padding:7px 10px; border:1px solid #1a1a2a; color:#ccc; }
+  tr:nth-child(even) td { background:#111120; }
+  .t { color:var(--green); font-weight:700; }
+  .f { color:var(--red); font-weight:700; }
+
+  /* TRUTH TABLE */
+  .truth-table th { text-align:center; }
+  .truth-table td { text-align:center; }
+  .truth-table .highlight-col { background:#001a14 !important; color:var(--green) !important; font-weight:700; }
+
+  /* PROOF BLOCKS */
+  .proof-block { background:#0d0d1a; border:1px solid #2a2a40; border-radius:8px; padding:14px; margin:10px 0; }
+  .proof-block .proof-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .proof-line { padding:4px 0; font-size:13px; border-bottom:1px dashed #1a1a2a; color:#ccc; }
+  .proof-line:last-child { border:none; }
+  .proof-line .label { color:var(--blue); font-weight:700; min-width:100px; display:inline-block; font-size:12px; }
+  .proof-line.conclusion { color:var(--green); font-weight:600; }
+
+  /* QUIZ */
+  .quiz-box { background:linear-gradient(135deg,#0a1520,#050d14); border:1px solid rgba(0,212,255,.3); border-radius:10px; padding:20px; margin:16px 0; }
+  .quiz-box h3 { color:var(--blue); margin-bottom:12px; font-size:14px; letter-spacing:1px; }
+  .quiz-q { padding:8px 0; border-bottom:1px solid #1a1a2a; font-size:14px; color:#ddd; }
+  .quiz-q:last-child { border:none; }
+  .quiz-q span { color:var(--yellow); font-weight:700; margin-right:8px; }
+
+  /* SECTION LABEL */
+  .section-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin:10px 0 4px; }
+
+  /* COMPARISON PILL */
+  .pill { display:inline-block; padding:2px 10px; border-radius:20px; font-size:12px; font-weight:600; margin:2px; }
+  .pill-blue   { background:rgba(0,212,255,.15); color:var(--blue); }
+  .pill-green  { background:rgba(0,255,136,.15); color:var(--green); }
+  .pill-red    { background:rgba(255,68,85,.15); color:var(--red); }
+  .pill-yellow { background:rgba(255,204,0,.15); color:var(--yellow); }
+
+  /* CHEAT SHEET */
+  .cheat-section { background:#0a0a14; border:1px solid #2a2a40; border-radius:10px; padding:20px; margin-bottom:14px; }
+  .cheat-section h3 { color:var(--yellow); font-size:14px; letter-spacing:1px; margin-bottom:12px; text-transform:uppercase; }
+
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    .sidenav { display:none; }
+    .main { margin-left:0; padding:16px; }
+    .grid,.grid-3 { grid-template-columns:1fr; }
+    .full { grid-column:1; }
+  }
+
+  hr.divider { border:none; border-top:1px solid #1a1a2a; margin:12px 0; }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#0a0a0f; }
+  ::-webkit-scrollbar-thumb { background:#2a2a40; border-radius:3px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<nav class="sidenav">
+  <div class="sidenav-title">Discrete Math</div>
+  <div class="nav-unit">Unit 1</div>
+  <a class="nav-link" href="#propositions">Propositions</a>
+  <a class="nav-link" href="#connectives">Connectives</a>
+  <a class="nav-link" href="#truth-tables">Truth Tables</a>
+  <a class="nav-link" href="#translation">Translation</a>
+  <a class="nav-link" href="#direct">Direct Proof</a>
+  <a class="nav-link" href="#contrapositive">Contrapositive</a>
+  <a class="nav-link" href="#contradiction">Contradiction</a>
+  <a class="nav-link" href="#induction">Induction</a>
+  <a class="nav-link" href="#divisibility">Divisibility</a>
+  <div class="nav-unit">Unit 2</div>
+  <a class="nav-link u2" href="#counting">Basic Counting</a>
+  <a class="nav-link u2" href="#permutations">Permutations</a>
+  <a class="nav-link u2" href="#combinations">Combinations</a>
+  <a class="nav-link u2" href="#inclusion-exclusion">Inclusion-Exclusion</a>
+  <a class="nav-link u2" href="#pigeonhole">Pigeonhole</a>
+  <a class="nav-link u2" href="#binomial">Binomial Theorem</a>
+  <div class="nav-unit">Unit 3</div>
+  <a class="nav-link u4" href="#prob-intro">What is Probability?</a>
+  <a class="nav-link u4" href="#prob-axioms">Axioms & Rules</a>
+  <a class="nav-link u4" href="#conditional">Conditional Probability</a>
+  <a class="nav-link u4" href="#bayes">Bayes' Theorem</a>
+  <a class="nav-link u4" href="#independence">Independence</a>
+  <a class="nav-link u4" href="#random-var">Random Variables</a>
+  <a class="nav-link u4" href="#expected">Expected Value</a>
+  <div class="nav-unit">Exam</div>
+  <a class="nav-link" href="#cheatsheet">Cheat Sheet</a>
+  <a class="nav-link" href="#exam-questions">Exam Questions</a>
+</nav>
+
+<!-- ═══════ MAIN ═══════ -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>DISCRETE MATHEMATICS</h1>
+    <p>Ambo University &nbsp;|&nbsp; Math 2052 &nbsp;|&nbsp; Mid Exam Crash Course</p>
+    <div class="badges">
+      <span class="badge b-blue">Unit 1: Logic &amp; Proof</span>
+      <span class="badge b-green">Unit 2: Counting</span>
+      <span class="badge b-red">Unit 3: Probability</span>
+      <span class="badge" style="background:rgba(255,136,0,.15);color:var(--orange);border:1px solid rgba(255,136,0,.3)">Exam Ready</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ -->
+  <!-- UNIT 1 -->
+  <!-- ═══════════════════════════════ -->
+  <div class="unit-header u1">
+    <div class="unit-num">1</div>
+    <div>
+      <h2>LOGIC &amp; MATHEMATICAL PROOF</h2>
+      <p>Propositions · Connectives · Truth Tables · 4 Proof Methods</p>
+    </div>
+  </div>
+
+  <!-- PROPOSITIONS -->
+  <div id="propositions" class="grid">
+    <div class="card">
+      <h3>What is a Proposition?</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:10px">A <strong style="color:#fff">declarative sentence</strong> that is either <strong style="color:var(--green)">TRUE</strong> or <strong style="color:var(--red)">FALSE</strong> — not both, not neither.</p>
+      <div class="section-label">✓ Are propositions</div>
+      <div class="formula ghl">✓ "5 + 2 = 8"             → FALSE (but it's a proposition)
+✓ "17 is prime"           → TRUE
+✓ "Addis Ababa is in ETH" → TRUE</div>
+      <div class="section-label">✗ Are NOT propositions</div>
+      <div class="formula rhl">✗ "What time is it?"      → Question
+✗ "Go to bed!"            → Command
+✗ "x + 1 = 4"            → Open sentence (depends on x)
+✗ "This statement is false" → Paradox</div>
+    </div>
+    <div class="card red">
+      <h3>Exam Traps — Propositions</h3>
+      <div class="danger">⚠ "x + 1 = 4" is NOT a proposition — truth depends on x</div>
+      <div class="danger">⚠ Questions, commands, exclamations = NOT propositions</div>
+      <div class="danger">⚠ "This statement is false" = paradox = NOT a proposition</div>
+      <div class="tip">✓ If it can be assigned T or F, it's a proposition</div>
+      <div class="tip">✓ Even false statements ARE propositions ("2+2=5" is a proposition)</div>
+    </div>
+  </div>
+
+  <!-- CONNECTIVES -->
+  <div id="connectives" class="card full" style="margin-bottom:16px">
+    <h3>Logical Connectives</h3>
+    <table>
+      <tr><th>Symbol</th><th>Name</th><th>English</th><th>When TRUE</th><th>When FALSE</th></tr>
+      <tr><td><code>¬p</code></td><td>NOT</td><td>"It is not the case that p"</td><td>p is F</td><td>p is T</td></tr>
+      <tr><td><code>p ∧ q</code></td><td>AND</td><td>"p and q"</td><td>Both T</td><td>Any one is F</td></tr>
+      <tr><td><code>p ∨ q</code></td><td>OR</td><td>"p or q"</td><td>At least one T</td><td>Both F</td></tr>
+      <tr><td><code style="color:var(--red);font-weight:700">p → q</code></td><td>IF-THEN</td><td>"If p then q"</td><td>Always EXCEPT p=T,q=F</td><td><strong style="color:var(--red)">ONLY when p=T, q=F</strong></td></tr>
+      <tr><td><code>p ↔ q</code></td><td>IFF</td><td>"p if and only if q"</td><td>Both same value</td><td>Different values</td></tr>
+    </table>
+    <div class="warn" style="margin-top:12px">⭐ The conditional p→q is the most tested. It is FALSE in exactly ONE case: p=TRUE and q=FALSE.</div>
+  </div>
+
+  <!-- TRUTH TABLES -->
+  <div id="truth-tables" class="card full" style="margin-bottom:16px">
+    <h3>Master Truth Table</h3>
+    <table class="truth-table">
+      <tr><th>p</th><th>q</th><th>¬p</th><th>p∧q</th><th>p∨q</th><th class="highlight-col">p→q</th><th>p↔q</th></tr>
+      <tr><td class="t">T</td><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="t">T</td><td class="t highlight-col">T</td><td class="t">T</td></tr>
+      <tr><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="t">T</td><td class="f highlight-col">F ← ONLY FALSE</td><td class="f">F</td></tr>
+      <tr><td class="f">F</td><td class="t">T</td><td class="t">T</td><td class="f">F</td><td class="t">T</td><td class="t highlight-col">T ← surprising</td><td class="f">F</td></tr>
+      <tr><td class="f">F</td><td class="f">F</td><td class="t">T</td><td class="f">F</td><td class="f">F</td><td class="t highlight-col">T ← surprising</td><td class="t">T</td></tr>
+    </table>
+  </div>
+
+  <!-- TRANSLATION -->
+  <div id="translation" class="grid">
+    <div class="card yellow">
+      <h3>Translating English → Logic</h3>
+      <table>
+        <tr><th>English Word</th><th>Symbol</th></tr>
+        <tr><td>"and"</td><td><code>∧</code></td></tr>
+        <tr><td>"or"</td><td><code>∨</code></td></tr>
+        <tr><td>"not", "it is not"</td><td><code>¬</code></td></tr>
+        <tr><td>"if...then"</td><td><code>→</code></td></tr>
+        <tr><td>"only if P"</td><td><code>→ P</code> (P is on right)</td></tr>
+        <tr><td>"if and only if"</td><td><code>↔</code></td></tr>
+        <tr><td>"unless"</td><td><code>∨</code></td></tr>
+      </table>
+    </div>
+    <div class="card orange">
+      <h3>Translation Example (from notes)</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px">"You can access the server only if you are an admin and have a password, unless using guest account."</p>
+      <div class="formula">a = "you are an administrator"
+p = "you have a valid password"
+g = "you are using guest account"
+s = "you can access the server"</div>
+      <div class="formula yhl">s → ((a ∧ p) ∨ g)</div>
+      <div class="warn">⚠ "p only if q" = p→q (NOT q→p)</div>
+    </div>
+  </div>
+
+  <!-- DE MORGAN -->
+  <div class="card full" style="margin-bottom:16px">
+    <h3>De Morgan's Laws — Memorize These</h3>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="formula hl">¬(P ∨ Q)  ≡  ¬P ∧ ¬Q</div>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px">NOT(P or Q) = (NOT P) and (NOT Q)</p>
+      </div>
+      <div>
+        <div class="formula hl">¬(P ∧ Q)  ≡  ¬P ∨ ¬Q</div>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px">NOT(P and Q) = (NOT P) or (NOT Q)</p>
+      </div>
+    </div>
+    <div class="tip">Used when writing the contrapositive of statements with "and" or "or"</div>
+  </div>
+
+  <!-- PROOF METHODS HEADER -->
+  <div style="background:linear-gradient(90deg,rgba(0,212,255,.1),transparent);border-left:3px solid var(--blue);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:16px">
+    <strong style="color:var(--blue)">4 PROOF METHODS</strong> &nbsp;|&nbsp; <span style="color:var(--muted);font-size:13px">Direct · Contrapositive · Contradiction · Induction</span>
+  </div>
+
+  <!-- KEY DEFINITIONS BOX -->
+  <div class="card dim full" style="margin-bottom:16px">
+    <h3 style="color:var(--yellow)">Key Definitions — Use These In Every Proof</h3>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="formula yhl">Even number:     n = 2k
+Odd number:      n = 2k + 1
+a divides b:     b = a·s  (s is integer)</div>
+      </div>
+      <div>
+        <div class="formula yhl">Rational number: x = a/b  (a,b integers, b≠0)
+Irrational:      NOT expressible as a/b
+Integer:         ..., -2, -1, 0, 1, 2, ...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECT PROOF -->
+  <div id="direct" class="grid">
+    <div class="card">
+      <h3>Method 1: Direct Proof</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:10px"><strong>Use when:</strong> Hypothesis P gives concrete algebraic form to work with.</p>
+      <div class="section-label">Template</div>
+      <div class="step key">1. Assume P is true</div>
+      <div class="step key">2. Apply definition (even=2k, odd=2k+1, etc.)</div>
+      <div class="step key">3. Calculate / manipulate algebra</div>
+      <div class="step key done">4. Show Q follows → conclusion</div>
+    </div>
+    <div class="card green">
+      <h3>Direct Proof — Full Example</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Prove: if n is odd → n² is odd</p>
+      <div class="proof-block">
+        <div class="proof-line"><span class="label">Assume:</span> n is odd</div>
+        <div class="proof-line"><span class="label">Definition:</span> n = 2k + 1 for some integer k</div>
+        <div class="proof-line"><span class="label">Calculate:</span> n² = (2k+1)² = 4k²+4k+1 = 2(2k²+2k)+1</div>
+        <div class="proof-line"><span class="label">Observe:</span> 2(2k²+2k)+1 = 2·(integer)+1 = ODD form</div>
+        <div class="proof-line conclusion"><span class="label">∴ Conclude:</span> n² is odd ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTRAPOSITIVE -->
+  <div id="contrapositive" class="grid" style="margin-top:16px">
+    <div class="card purple">
+      <h3>Method 2: Contrapositive</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px"><strong>P→Q</strong> is equivalent to <strong>¬Q→¬P</strong>. Prove the contrapositive instead.</p>
+      <p style="font-size:13px;color:#bbb;margin-bottom:10px"><strong>Use when:</strong> Q is easier to negate than P is to work with.</p>
+      <div class="step key">1. Write contrapositive: ¬Q → ¬P</div>
+      <div class="step key">2. Assume ¬Q is true</div>
+      <div class="step key">3. Derive ¬P using algebra/definitions</div>
+      <div class="step key done">4. Conclude original P→Q is true</div>
+    </div>
+    <div class="card">
+      <h3>Contrapositive — Full Example</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Prove: if n² is odd → n is odd</p>
+      <div class="proof-block">
+        <div class="proof-line"><span class="label">Original:</span> n² odd → n odd</div>
+        <div class="proof-line"><span class="label">Contra:</span> n EVEN → n² EVEN</div>
+        <div class="proof-line"><span class="label">Assume:</span> n is even → n = 2k</div>
+        <div class="proof-line"><span class="label">Calculate:</span> n² = (2k)² = 4k² = 2(2k²) → EVEN</div>
+        <div class="proof-line conclusion"><span class="label">∴ Conclude:</span> Contrapositive true → original true ✓</div>
+      </div>
+      <div class="warn" style="margin-top:8px">⚠ Use De Morgan when negating "A or B" or "A and B"</div>
+    </div>
+  </div>
+
+  <!-- CONTRADICTION -->
+  <div id="contradiction" class="grid" style="margin-top:16px">
+    <div class="card red">
+      <h3>Method 3: Contradiction</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px"><strong>Use when:</strong> Statement involves irrationals, primes, or infinities.</p>
+      <div class="step key">1. Assume S is FALSE</div>
+      <div class="step key">2. Work logically from that assumption</div>
+      <div class="step key">3. Arrive at impossible result (contradiction!)</div>
+      <div class="step key done">4. Conclude S must be TRUE</div>
+    </div>
+    <div class="card">
+      <h3>Contradiction — √2 is Irrational</h3>
+      <div class="proof-block">
+        <div class="proof-line"><span class="label">Assume:</span> √2 = a/b in lowest terms (b≠0)</div>
+        <div class="proof-line"><span class="label">Square:</span> 2 = a²/b² → 2b² = a²</div>
+        <div class="proof-line"><span class="label">Deduction 1:</span> a² even → a even → a = 2c</div>
+        <div class="proof-line"><span class="label">Substitute:</span> 2b² = 4c² → b² = 2c² → b even</div>
+        <div class="proof-line"><span class="label">CONTRADICTION:</span> a and b both even → share factor 2 → NOT lowest terms!</div>
+        <div class="proof-line conclusion"><span class="label">∴ Conclude:</span> √2 is irrational ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDUCTION -->
+  <div id="induction" class="card full" style="margin-top:16px;margin-bottom:16px">
+    <h3>Method 4: Mathematical Induction</h3>
+    <p style="font-size:13px;color:#bbb;margin-bottom:12px"><strong>Use when:</strong> Statement says "For ALL positive integers n, P(n) is true"</p>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="section-label">2 Required Steps</div>
+        <div class="step key"><strong>Step 1 — BASE CASE:</strong> Prove P(1) is true (just plug in n=1)</div>
+        <div class="step key"><strong>Step 2 — INDUCTIVE STEP:</strong><br>Assume P(k) is true (Inductive Hypothesis)<br>Then prove P(k+1) is true using P(k)</div>
+        <div class="tip" style="margin-top:8px">Both steps are REQUIRED. Missing either = zero marks.</div>
+      </div>
+      <div>
+        <div class="section-label">Example: Prove 1+2+3+...+n = n(n+1)/2</div>
+        <div class="proof-block">
+          <div class="proof-line"><span class="label">Base (n=1):</span> LHS=1, RHS=1(2)/2=1 ✓</div>
+          <div class="proof-line"><span class="label">Assume P(k):</span> 1+2+...+k = k(k+1)/2</div>
+          <div class="proof-line"><span class="label">Prove P(k+1):</span> 1+2+...+k+(k+1)</div>
+          <div class="proof-line"><span class="label">= P(k)+(k+1):</span> k(k+1)/2 + (k+1)</div>
+          <div class="proof-line"><span class="label">Factor:</span> (k+1)[k/2 + 1] = (k+1)(k+2)/2</div>
+          <div class="proof-line conclusion"><span class="label">∴ Done:</span> Exactly the formula for n=k+1 ✓</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="section-label">Example 2: Prove n³ − n is divisible by 3</div>
+      <div class="grid" style="margin:0">
+        <div class="proof-block">
+          <div class="proof-line"><span class="label">Base (n=1):</span> 1³-1=0 = 3×0 ✓ divisible by 3</div>
+          <div class="proof-line"><span class="label">Assume P(k):</span> k³-k = 3m for some integer m</div>
+        </div>
+        <div class="proof-block">
+          <div class="proof-line"><span class="label">P(k+1):</span> (k+1)³-(k+1) = k³+3k²+3k+1-k-1</div>
+          <div class="proof-line"><span class="label">Simplify:</span> = (k³-k) + 3k²+3k = 3m+3k²+3k</div>
+          <div class="proof-line conclusion"><span class="label">= 3(m+k²+k):</span> divisible by 3 ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHICH METHOD TABLE -->
+  <div class="card yellow full" style="margin-bottom:16px">
+    <h3>Which Proof Method? — Quick Guide</h3>
+    <table>
+      <tr><th>Statement type</th><th>Use this method</th></tr>
+      <tr><td>"If P then Q" and P gives algebraic form</td><td><span class="pill pill-blue">Direct Proof</span></td></tr>
+      <tr><td>"If P then Q" and Q is easier to negate</td><td><span class="pill pill-blue">Contrapositive</span></td></tr>
+      <tr><td>Prove something is irrational, prime, or impossible</td><td><span class="pill pill-red">Contradiction</span></td></tr>
+      <tr><td>"For all n ∈ ℕ", sum formulas, divisibility for all n</td><td><span class="pill pill-green">Induction</span></td></tr>
+    </table>
+  </div>
+
+  <!-- DIVISIBILITY -->
+  <div id="divisibility" class="grid">
+    <div class="card">
+      <h3>Divisibility Theorems</h3>
+      <div class="formula">If a|b AND a|c  →  a|(b+c), a|(b-c), a|(mb+nc)
+If a|b AND b|c  →  a|c   (transitivity)
+If a|b (b≠0)    →  |a| ≤ |b|</div>
+    </div>
+    <div class="card green">
+      <h3>Division Algorithm</h3>
+      <div class="formula ghl">a = bq + r,   where 0 ≤ r &lt; b</div>
+      <div class="formula">Example: a=23, b=5
+23 = 5×4 + 3  →  q=4, r=3
+
+Example: a=-17, b=5
+-17 = 5×(-4) + 3  →  q=-4, r=3</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ -->
+  <!-- UNIT 2 -->
+  <!-- ═══════════════════════════════ -->
+  <div class="unit-header u2" style="margin-top:40px">
+    <div class="unit-num">2</div>
+    <div>
+      <h2>ELEMENTARY COUNTING PRINCIPLES</h2>
+      <p>Permutations · Combinations · Inclusion-Exclusion · Pigeonhole · Binomial</p>
+    </div>
+  </div>
+
+  <!-- BASIC COUNTING -->
+  <div id="counting" class="grid">
+    <div class="card green">
+      <h3>Rule of Product (Multiplication)</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px">Task 1 done in m ways AND task 2 in n ways → total = m × n</p>
+      <div class="formula ghl">Total = m₁ × m₂ × m₃ × ...</div>
+      <div class="formula">Example: 3 shirt choices × 4 pant choices = 12 outfits
+Toss a coin 3 times: 2 × 2 × 2 = 8 outcomes</div>
+      <div class="tip">Use when tasks are done TOGETHER (AND)</div>
+    </div>
+    <div class="card">
+      <h3>Rule of Sum (Addition)</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px">Task 1 in m ways OR task 2 in n ways (mutually exclusive) → total = m + n</p>
+      <div class="formula hl">Total = m + n</div>
+      <div class="formula">Example: Travel by bus (3 routes) OR train (2 routes)
+= 3 + 2 = 5 ways</div>
+      <div class="tip">Use when choosing ONE of the tasks (OR)</div>
+    </div>
+  </div>
+
+  <!-- PERMUTATIONS -->
+  <div id="permutations" class="card full" style="margin-bottom:16px;margin-top:16px">
+    <h3>Permutations — Order MATTERS</h3>
+    <p style="font-size:13px;color:#bbb;margin-bottom:12px">Arranging r items from n items where <strong style="color:var(--green)">order matters</strong>. Think: assigning positions, making passwords, ranking.</p>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="formula ghl">P(n, r) = n! / (n-r)!</div>
+        <div class="formula">n = total available items
+r = how many you pick
+! = factorial (n! = n×(n-1)×...×2×1)
+
+Special: arrange ALL n items
+P(n,n) = n!</div>
+      </div>
+      <div>
+        <div class="section-label">Example</div>
+        <div class="step"><strong>Q:</strong> How many 3-letter arrangements from {A,B,C,D,E}?</div>
+        <div class="step"><strong>P(5,3)</strong> = 5!/(5-3)! = 5!/2! = 120/2 = <strong style="color:var(--green)">60</strong></div>
+        <div class="step"><strong>Q:</strong> Arrange all 4 books on a shelf?</div>
+        <div class="step"><strong>P(4,4)</strong> = 4! = 4×3×2×1 = <strong style="color:var(--green)">24</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMBINATIONS -->
+  <div id="combinations" class="card full" style="margin-bottom:16px">
+    <h3>Combinations — Order Does NOT Matter</h3>
+    <p style="font-size:13px;color:#bbb;margin-bottom:12px">Selecting r items from n where <strong style="color:var(--blue)">order doesn't matter</strong>. Think: teams, committees, groups.</p>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="formula hl">C(n, r) = n! / [r! × (n-r)!]</div>
+        <div class="formula">Also written as C(n,r) or "n choose r"
+
+Relationship to Permutation:
+P(n,r) = C(n,r) × r!</div>
+      </div>
+      <div>
+        <div class="section-label">Example</div>
+        <div class="step"><strong>Q:</strong> Choose a committee of 3 from 7 people?</div>
+        <div class="step"><strong>C(7,3)</strong> = 7!/(3!×4!) = 5040/(6×24) = <strong style="color:var(--blue)">35</strong></div>
+        <div class="step"><strong>Q:</strong> Choose 2 players from 10 for a doubles match?</div>
+        <div class="step"><strong>C(10,2)</strong> = 10!/(2!×8!) = 90/2 = <strong style="color:var(--blue)">45</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERM VS COMB -->
+  <div class="card yellow full" style="margin-bottom:16px">
+    <h3>Permutation vs Combination — THE KEY DECISION</h3>
+    <table>
+      <tr><th>Question says...</th><th>Keyword clue</th><th>Use</th></tr>
+      <tr><td>"How many arrangements/sequences/orders"</td><td>arrange, rank, assign position, password</td><td><span class="pill pill-green">Permutation P(n,r)</span></td></tr>
+      <tr><td>"How many selections/groups/committees"</td><td>choose, select, group, team, committee</td><td><span class="pill pill-blue">Combination C(n,r)</span></td></tr>
+      <tr><td>"How many ways to assign specific roles"</td><td>president/VP/treasurer (specific roles)</td><td><span class="pill pill-green">Permutation P(n,r)</span></td></tr>
+      <tr><td>"How many ways to pick a team"</td><td>team of 5 (no specific roles)</td><td><span class="pill pill-blue">Combination C(n,r)</span></td></tr>
+    </table>
+    <div class="formula yhl" style="margin-top:12px">Golden Rule:
+Does ORDER matter?  YES → Permutation
+Does ORDER matter?  NO  → Combination</div>
+  </div>
+
+  <!-- INCLUSION-EXCLUSION -->
+  <div id="inclusion-exclusion" class="card full" style="margin-bottom:16px">
+    <h3>Inclusion-Exclusion Principle</h3>
+    <p style="font-size:13px;color:#bbb;margin-bottom:12px">When sets overlap, simple addition double-counts. Subtract the intersection.</p>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="section-label">For 2 sets</div>
+        <div class="formula hl">|A ∪ B| = |A| + |B| - |A ∩ B|</div>
+        <div class="section-label" style="margin-top:10px">For 3 sets</div>
+        <div class="formula hl">|A∪B∪C| = |A|+|B|+|C|
+        - |A∩B| - |A∩C| - |B∩C|
+        + |A∩B∩C|</div>
+      </div>
+      <div>
+        <div class="section-label">Worked Example</div>
+        <div class="step"><strong>Given:</strong> 30 students. 18 play football, 15 basketball, 8 play both.</div>
+        <div class="step"><strong>Find:</strong> How many play at least one sport?</div>
+        <div class="step"><strong>|F∪B|</strong> = 18 + 15 - 8 = <strong style="color:var(--green)">25</strong></div>
+        <div class="danger" style="margin-top:8px">⚠ ALWAYS subtract the intersection. Forgetting -|A∩B| is the #1 exam mistake.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIGEONHOLE -->
+  <div id="pigeonhole" class="grid">
+    <div class="card pink">
+      <h3>Pigeonhole Principle</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px">If more items than containers → at least one container has 2+ items.</p>
+      <div class="formula" style="border-color:var(--pink)">Simple: n+1 items in n containers
+→ at least 1 container has ≥ 2 items
+
+Generalized: N items in k containers
+→ at least 1 container has ≥ ⌈N/k⌉ items
+(⌈ ⌉ = ceiling = round UP)</div>
+    </div>
+    <div class="card">
+      <h3>Pigeonhole Examples</h3>
+      <div class="step"><strong>Q:</strong> Among 13 people, must 2 share a birth month?</div>
+      <div class="step">Pigeons=13 people, Holes=12 months. 13 &gt; 12 → YES ✓</div>
+      <hr class="divider">
+      <div class="step"><strong>Q:</strong> Among 5 integers, must 2 have same remainder mod 4?</div>
+      <div class="step">Remainders mod 4: {0,1,2,3} = 4 options. 5 &gt; 4 → YES ✓</div>
+      <div class="tip">Identify: WHAT are the pigeons? WHAT are the holes?</div>
+    </div>
+  </div>
+
+  <!-- BINOMIAL -->
+  <div id="binomial" class="card full" style="margin-top:16px;margin-bottom:16px">
+    <h3>Binomial Theorem</h3>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="formula hl">(x+y)ⁿ = Σ C(n,k) · x^(n-k) · y^k
+         (k from 0 to n)</div>
+        <div class="section-label" style="margin-top:10px">Specific term formula</div>
+        <div class="formula hl">T(r+1) = C(n,r) · x^(n-r) · y^r</div>
+      </div>
+      <div>
+        <div class="section-label">Example: Expand (x+y)³</div>
+        <div class="formula">= C(3,0)x³ + C(3,1)x²y + C(3,2)xy² + C(3,3)y³
+= 1·x³ + 3·x²y + 3·xy² + 1·y³
+= x³ + 3x²y + 3xy² + y³</div>
+        <div class="tip">Coefficients from Pascal's triangle: 1, 3, 3, 1</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ -->
+  <!-- UNIT 3 — PROBABILITY -->
+  <!-- ═══════════════════════════════ -->
+  <div class="unit-header u3" style="margin-top:40px">
+    <div class="unit-num">3</div>
+    <div>
+      <h2>PROBABILITY</h2>
+      <p>Sample Space · Axioms · Conditional · Bayes' · Random Variables · Expected Value</p>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div id="prob-intro" class="grid">
+    <div class="card orange">
+      <h3>What is Probability?</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:10px">Probability measures <strong style="color:#fff">how likely</strong> an event is to occur. It is always a number between 0 and 1.</p>
+      <div class="formula" style="border-color:var(--orange)">Sample Space (S) = set of ALL possible outcomes
+Event (E)        = a subset of S
+P(E)             = probability of event E
+
+0 ≤ P(E) ≤ 1
+P(S) = 1  (something always happens)
+P(∅) = 0  (impossible event)</div>
+      <div class="tip">Basketball analogy: S = all possible shots. E = shots that go in. P(E) = fraction that score.</div>
+    </div>
+    <div class="card">
+      <h3>Key Definitions</h3>
+      <table>
+        <tr><th>Term</th><th>Meaning</th></tr>
+        <tr><td><strong>Experiment</strong></td><td>Any process with uncertain outcome</td></tr>
+        <tr><td><strong>Sample Space S</strong></td><td>All possible outcomes</td></tr>
+        <tr><td><strong>Event E</strong></td><td>A subset of S</td></tr>
+        <tr><td><strong>Outcome</strong></td><td>A single result of an experiment</td></tr>
+        <tr><td><strong>Complement Eᶜ</strong></td><td>All outcomes NOT in E</td></tr>
+      </table>
+      <div class="formula" style="margin-top:10px">Example: Roll a die
+S = {1, 2, 3, 4, 5, 6}
+E = "even number" = {2, 4, 6}
+P(E) = 3/6 = 1/2</div>
+    </div>
+  </div>
+
+  <!-- CLASSICAL PROBABILITY -->
+  <div class="card full" style="margin-bottom:16px;margin-top:0">
+    <h3>Classical (Equally Likely) Probability</h3>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="formula hl">P(E) = |E| / |S| = (favorable outcomes) / (total outcomes)</div>
+        <div class="warn">⚠ Only valid when all outcomes are EQUALLY likely</div>
+      </div>
+      <div>
+        <div class="section-label">Examples</div>
+        <div class="step"><strong>Toss a coin:</strong> P(Heads) = 1/2</div>
+        <div class="step"><strong>Roll a die, get 4:</strong> P(4) = 1/6</div>
+        <div class="step"><strong>Pick a card, get Ace:</strong> P(Ace) = 4/52 = 1/13</div>
+        <div class="step"><strong>Pick 1 from {1..10}, get even:</strong> P = 5/10 = 1/2</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AXIOMS -->
+  <div id="prob-axioms" class="card full" style="margin-bottom:16px">
+    <h3>Probability Axioms &amp; Rules</h3>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="section-label">3 Kolmogorov Axioms</div>
+        <div class="formula" style="border-color:var(--orange)">Axiom 1: P(E) ≥ 0           (non-negative)
+Axiom 2: P(S) = 1           (certain event)
+Axiom 3: If E∩F = ∅ then
+          P(E∪F) = P(E) + P(F)  (mutually exclusive)</div>
+        <div class="section-label" style="margin-top:10px">Complement Rule</div>
+        <div class="formula hl">P(Eᶜ) = 1 − P(E)</div>
+        <div class="tip">If P(rain) = 0.3, then P(no rain) = 0.7</div>
+      </div>
+      <div>
+        <div class="section-label">Addition Rule (General)</div>
+        <div class="formula hl">P(E∪F) = P(E) + P(F) − P(E∩F)</div>
+        <div class="section-label" style="margin-top:10px">Mutually Exclusive Events</div>
+        <div class="formula" style="border-color:var(--orange)">If E∩F = ∅:
+P(E∪F) = P(E) + P(F)   (no overlap)</div>
+        <div class="section-label" style="margin-top:10px">Worked Example</div>
+        <div class="step">P(A) = 0.4, P(B) = 0.3, P(A∩B) = 0.1</div>
+        <div class="step">P(A∪B) = 0.4 + 0.3 − 0.1 = <strong style="color:var(--orange)">0.6</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONDITIONAL PROBABILITY -->
+  <div id="conditional" class="grid">
+    <div class="card orange">
+      <h3>Conditional Probability</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px">Probability of E <strong style="color:#fff">given that F already happened</strong>. F shrinks your sample space.</p>
+      <div class="formula" style="border-color:var(--orange);color:var(--orange);font-weight:700;border-width:2px;background:#1a0d00">P(E | F) = P(E ∩ F) / P(F),   P(F) ≠ 0</div>
+      <div class="section-label" style="margin-top:10px">Multiplication Rule (rearranged)</div>
+      <div class="formula hl">P(E ∩ F) = P(E | F) · P(F)
+             = P(F | E) · P(E)</div>
+    </div>
+    <div class="card">
+      <h3>Conditional — Worked Example</h3>
+      <div class="step"><strong>Experiment:</strong> Roll a die. E = "get 4", F = "get even number"</div>
+      <div class="step"><strong>P(F)</strong> = 3/6 = 1/2</div>
+      <div class="step"><strong>P(E ∩ F)</strong> = P({4}) = 1/6</div>
+      <div class="step"><strong>P(E | F)</strong> = (1/6) / (1/2) = <strong style="color:var(--orange)">2/6 = 1/3</strong></div>
+      <div class="tip">Meaning: Among even outcomes {2,4,6}, only 1 is "4" → 1/3 ✓</div>
+      <div class="warn" style="margin-top:8px">⚠ P(E|F) ≠ P(F|E) — order matters!</div>
+    </div>
+  </div>
+
+  <!-- BAYES THEOREM -->
+  <div id="bayes" class="card full" style="margin-top:16px;margin-bottom:16px">
+    <h3>Bayes' Theorem</h3>
+    <p style="font-size:13px;color:#bbb;margin-bottom:12px">Reverses conditional probability. Given P(E|F), find P(F|E).</p>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="section-label">Simple Form</div>
+        <div class="formula hl">P(F | E) = P(E | F) · P(F) / P(E)</div>
+        <div class="section-label" style="margin-top:10px">Full Form (with Total Probability)</div>
+        <div class="formula" style="border-color:var(--orange)">P(F | E) = P(E|F)·P(F) / [P(E|F)·P(F) + P(E|Fᶜ)·P(Fᶜ)]</div>
+        <div class="section-label" style="margin-top:10px">Total Probability Law</div>
+        <div class="formula" style="border-color:var(--yellow)">P(E) = P(E|F)·P(F) + P(E|Fᶜ)·P(Fᶜ)</div>
+      </div>
+      <div>
+        <div class="section-label">Worked Example</div>
+        <div class="step"><strong>Given:</strong> Disease test. P(Disease) = 0.01</div>
+        <div class="step">P(Positive | Disease) = 0.99</div>
+        <div class="step">P(Positive | No Disease) = 0.05</div>
+        <div class="step"><strong>Find:</strong> P(Disease | Positive)</div>
+        <hr class="divider">
+        <div class="step"><strong>P(Pos)</strong> = 0.99×0.01 + 0.05×0.99 = 0.0099 + 0.0495 = 0.0594</div>
+        <div class="step"><strong>P(Disease|Pos)</strong> = (0.99 × 0.01) / 0.0594</div>
+        <div class="step">= 0.0099 / 0.0594 ≈ <strong style="color:var(--orange)">0.1667 = 16.67%</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDEPENDENCE -->
+  <div id="independence" class="grid">
+    <div class="card green">
+      <h3>Independent Events</h3>
+      <p style="font-size:13px;color:#bbb;margin-bottom:8px">Two events are <strong style="color:#fff">independent</strong> if knowing one happened gives NO information about the other.</p>
+      <div class="formula ghl">E and F are independent if:
+P(E ∩ F) = P(E) · P(F)
+
+Equivalently:
+P(E | F) = P(E)
+P(F | E) = P(F)</div>
+      <div class="warn">⚠ Independent ≠ Mutually Exclusive!<br>Mutually exclusive: P(E∩F)=0<br>Independent: P(E∩F)=P(E)·P(F)</div>
+    </div>
+    <div class="card">
+      <h3>Independence — Examples</h3>
+      <div class="step"><strong>Toss coin twice:</strong> H on 1st and H on 2nd are independent</div>
+      <div class="step">P(H₁ ∩ H₂) = 1/2 × 1/2 = 1/4 = P(H₁)·P(H₂) ✓</div>
+      <hr class="divider">
+      <div class="step"><strong>Check independence:</strong> P(A)=0.4, P(B)=0.3, P(A∩B)=0.12</div>
+      <div class="step">P(A)·P(B) = 0.4×0.3 = 0.12 = P(A∩B) → <strong style="color:var(--green)">INDEPENDENT ✓</strong></div>
+      <hr class="divider">
+      <div class="step"><strong>n Independent events:</strong></div>
+      <div class="step">P(E₁ ∩ E₂ ∩...∩ Eₙ) = P(E₁)·P(E₂)···P(Eₙ)</div>
+    </div>
+  </div>
+
+  <!-- RANDOM VARIABLES -->
+  <div id="random-var" class="card full" style="margin-top:16px;margin-bottom:16px">
+    <h3>Random Variables</h3>
+    <p style="font-size:13px;color:#bbb;margin-bottom:12px">A <strong style="color:#fff">random variable X</strong> assigns a number to each outcome in the sample space.</p>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="section-label">Discrete Random Variable</div>
+        <p style="font-size:13px;color:#bbb;margin-bottom:8px">Takes countable values (like 0, 1, 2, 3...)</p>
+        <div class="formula" style="border-color:var(--orange)">Probability Distribution:
+  Lists all values x and their probabilities P(X=x)
+
+Requirements:
+  P(X=x) ≥ 0  for all x
+  Σ P(X=x) = 1  (must sum to 1)</div>
+        <div class="section-label" style="margin-top:10px">Example: Toss 2 coins, X = number of Heads</div>
+        <table style="font-size:13px;margin-top:6px">
+          <tr><th>x</th><th>0</th><th>1</th><th>2</th></tr>
+          <tr><td>P(X=x)</td><td>1/4</td><td>2/4</td><td>1/4</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="section-label">Cumulative Distribution F(x)</div>
+        <div class="formula" style="border-color:var(--orange)">F(x) = P(X ≤ x) = Σ P(X=k) for k ≤ x</div>
+        <div class="section-label" style="margin-top:10px">Example (continued)</div>
+        <table style="font-size:13px;margin-top:6px">
+          <tr><th>x</th><th>F(x) = P(X≤x)</th></tr>
+          <tr><td>0</td><td>1/4 = 0.25</td></tr>
+          <tr><td>1</td><td>1/4 + 2/4 = 3/4 = 0.75</td></tr>
+          <tr><td>2</td><td>3/4 + 1/4 = 4/4 = 1</td></tr>
+        </table>
+        <div class="tip" style="margin-top:8px">F(x) always ends at 1 (by the last value)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPECTED VALUE & VARIANCE -->
+  <div id="expected" class="card full" style="margin-bottom:16px">
+    <h3>Expected Value &amp; Variance</h3>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="section-label">Expected Value (Mean) E(X)</div>
+        <div class="formula hl">E(X) = Σ x · P(X = x)</div>
+        <p style="font-size:13px;color:#bbb;margin:6px 0">The <strong style="color:#fff">long-run average</strong> value of X.</p>
+        <div class="section-label" style="margin-top:10px">Variance Var(X)</div>
+        <div class="formula hl">Var(X) = E(X²) − [E(X)]²</div>
+        <div class="formula" style="border-color:var(--orange)">Where: E(X²) = Σ x² · P(X = x)</div>
+        <div class="section-label" style="margin-top:10px">Standard Deviation</div>
+        <div class="formula" style="border-color:var(--orange)">σ = √Var(X)</div>
+      </div>
+      <div>
+        <div class="section-label">Full Worked Example</div>
+        <div class="step"><strong>X = number of Heads in 2 coin tosses</strong></div>
+        <table style="font-size:13px;margin:8px 0">
+          <tr><th>x</th><th>P(X=x)</th><th>x·P</th><th>x²·P</th></tr>
+          <tr><td>0</td><td>1/4</td><td>0</td><td>0</td></tr>
+          <tr><td>1</td><td>2/4</td><td>2/4</td><td>2/4</td></tr>
+          <tr><td>2</td><td>1/4</td><td>2/4</td><td>4/4</td></tr>
+          <tr><td><strong>Σ</strong></td><td><strong>1</strong></td><td><strong>4/4 = 1</strong></td><td><strong>6/4 = 1.5</strong></td></tr>
+        </table>
+        <div class="step"><strong>E(X)</strong> = 1</div>
+        <div class="step"><strong>Var(X)</strong> = 1.5 − 1² = <strong style="color:var(--orange)">0.5</strong></div>
+        <div class="step"><strong>σ</strong> = √0.5 ≈ <strong style="color:var(--orange)">0.707</strong></div>
+      </div>
+    </div>
+    <hr class="divider">
+    <div class="grid" style="margin:8px 0 0">
+      <div>
+        <div class="section-label">Properties of E(X)</div>
+        <div class="formula" style="border-color:var(--orange)">E(aX + b) = a·E(X) + b
+E(X + Y)  = E(X) + E(Y)   (always)
+E(X · Y)  = E(X)·E(Y)     (only if independent)</div>
+      </div>
+      <div>
+        <div class="section-label">Properties of Var(X)</div>
+        <div class="formula" style="border-color:var(--orange)">Var(aX + b) = a²·Var(X)
+Var(X + Y) = Var(X) + Var(Y)  (if independent)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBABILITY SUMMARY TABLE -->
+  <div class="card orange full" style="margin-bottom:16px">
+    <h3>Probability — All Formulas at a Glance</h3>
+    <table>
+      <tr><th>Rule</th><th>Formula</th><th>When to Use</th></tr>
+      <tr><td>Classical P</td><td>P(E) = |E| / |S|</td><td>Equally likely outcomes</td></tr>
+      <tr><td>Complement</td><td>P(Eᶜ) = 1 − P(E)</td><td>Easier to find "not E"</td></tr>
+      <tr><td>Addition</td><td>P(E∪F) = P(E)+P(F)−P(E∩F)</td><td>Any two events</td></tr>
+      <tr><td>Mutually Exclusive</td><td>P(E∪F) = P(E)+P(F)</td><td>E∩F = ∅</td></tr>
+      <tr><td>Multiplication</td><td>P(E∩F) = P(E|F)·P(F)</td><td>Dependent events</td></tr>
+      <tr><td>Independent</td><td>P(E∩F) = P(E)·P(F)</td><td>E and F independent</td></tr>
+      <tr><td>Conditional</td><td>P(E|F) = P(E∩F)/P(F)</td><td>Given F happened</td></tr>
+      <tr><td>Bayes'</td><td>P(F|E) = P(E|F)·P(F)/P(E)</td><td>Reverse conditional</td></tr>
+      <tr><td>Expected Value</td><td>E(X) = Σ x·P(X=x)</td><td>Average outcome</td></tr>
+      <tr><td>Variance</td><td>Var(X) = E(X²) − [E(X)]²</td><td>Spread of distribution</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════ -->
+  <!-- CHEAT SHEET -->
+  <!-- ═══════════════════════════════ -->
+  <div style="background:linear-gradient(135deg,#1a1400,#0a0a00);border:2px solid var(--yellow);border-radius:14px;padding:24px;margin-top:36px;margin-bottom:20px;text-align:center">
+    <h2 style="color:var(--yellow);font-size:20px;letter-spacing:2px">EXAM CHEAT SHEET</h2>
+    <p style="color:var(--muted);font-size:13px;margin-top:4px">Read this once before entering the exam hall</p>
+  </div>
+
+  <div id="cheatsheet" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="cheat-section">
+      <h3>Unit 1 — Logic</h3>
+      <div class="formula yhl">Proposition = T or F declarative sentence
+
+NOT propositions:
+  Questions, commands,
+  open sentences (x+1=4), paradoxes
+
+p→q: FALSE only when p=T, q=F
+
+Contrapositive of (P→Q) = (¬Q→¬P)
+
+De Morgan:
+  ¬(P∨Q) = ¬P∧¬Q
+  ¬(P∧Q) = ¬P∨¬Q
+
+Even=2k   Odd=2k+1   a|b → b=a·s
+
+DIRECT:  Assume P, derive Q
+CONTRA:  Prove ¬Q → ¬P instead
+CONTRA: Assume ¬S, find contradiction
+INDUCT: Base case + P(k)→P(k+1)</div>
+    </div>
+    <div class="cheat-section">
+      <h3>Unit 2 — Counting</h3>
+      <div class="formula yhl">Product rule: m × n
+Sum rule:     m + n
+
+ORDER MATTERS?
+  YES → P(n,r) = n!/(n-r)!
+  NO  → C(n,r) = n!/[r!(n-r)!]
+
+P(n,r) = C(n,r) × r!
+
+Inclusion-Exclusion:
+|A∪B| = |A|+|B|-|A∩B|
+
+|A∪B∪C| = |A|+|B|+|C|
+          -|A∩B|-|A∩C|-|B∩C|
+          +|A∩B∩C|
+
+Pigeonhole: n+1 items in n holes
+  → at least 1 hole has ≥ 2 items
+
+Binomial: (x+y)ⁿ = Σ C(n,k)x^(n-k)y^k
+T(r+1) = C(n,r)·x^(n-r)·y^r</div>
+    </div>
+    <div class="cheat-section" style="grid-column:1/-1">
+      <h3 style="color:var(--orange)">Unit 3 — Probability</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="formula yhl">BASIC:
+P(E) = |E|/|S|   (classical)
+P(Eᶜ) = 1 − P(E)
+P(E∪F) = P(E)+P(F)−P(E∩F)
+Mutually exclusive: P(E∩F)=0
+  → P(E∪F) = P(E)+P(F)
+
+CONDITIONAL:
+P(E|F) = P(E∩F) / P(F)
+P(E∩F) = P(E|F)·P(F)
+
+INDEPENDENCE:
+P(E∩F) = P(E)·P(F)
+P(E|F) = P(E)</div>
+        <div class="formula yhl">BAYES' THEOREM:
+P(F|E) = P(E|F)·P(F) / P(E)
+
+TOTAL PROBABILITY:
+P(E) = P(E|F)·P(F) + P(E|Fᶜ)·P(Fᶜ)
+
+RANDOM VARIABLE:
+Σ P(X=x) = 1  (must sum to 1)
+
+EXPECTED VALUE:
+E(X) = Σ x·P(X=x)
+
+VARIANCE:
+Var(X) = E(X²) − [E(X)]²
+σ = √Var(X)
+
+E(aX+b) = a·E(X)+b
+Var(aX+b) = a²·Var(X)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAM QUESTIONS -->
+  <div id="exam-questions" class="card red full" style="margin-bottom:20px">
+    <h3>Most Common Exam Questions</h3>
+    <div class="grid" style="margin:0">
+      <div>
+        <div class="step"><strong>1.</strong> Identify which sentences are propositions</div>
+        <div class="step"><strong>2.</strong> Build truth table for p→q or p↔q</div>
+        <div class="step"><strong>3.</strong> Write the contrapositive of a statement</div>
+        <div class="step"><strong>4.</strong> Direct proof: if n is even/odd then n² is even/odd</div>
+        <div class="step"><strong>5.</strong> Induction proof: sum formula or divisibility</div>
+        <div class="step"><strong>6.</strong> Contradiction: prove √2 or √3 is irrational</div>
+      </div>
+      <div>
+        <div class="step"><strong>7.</strong> Permutation vs Combination word problem</div>
+        <div class="step"><strong>8.</strong> Inclusion-Exclusion with 2 overlapping sets</div>
+        <div class="step"><strong>9.</strong> Pigeonhole: justify why something must repeat</div>
+        <div class="step"><strong>10.</strong> Find P(E), P(Eᶜ), P(E∪F) using basic rules</div>
+        <div class="step"><strong>11.</strong> Compute conditional probability P(E|F)</div>
+        <div class="step"><strong>12.</strong> Apply Bayes' Theorem</div>
+        <div class="step"><strong>13.</strong> Test if two events are independent</div>
+        <div class="step"><strong>14.</strong> Find E(X) and Var(X) from a distribution table</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTIVATIONAL FOOTER -->
+  <div style="background:linear-gradient(135deg,#0a1f14,#061209);border:2px solid var(--green);border-radius:14px;padding:28px;text-align:center;margin-bottom:20px">
+    <h2 style="color:var(--green);font-size:20px;letter-spacing:2px">YOU STUDIED. YOU PREPARED. YOU'RE READY.</h2>
+    <p style="color:#88ffcc;font-size:14px;margin-top:10px">Write your formulas on paper the moment the exam starts.<br>
+    Stay calm. Read each question fully before answering.<br>
+    <strong style="color:#fff">You've got this.</strong></p>
+  </div>
+
+  <!-- CREDIT FOOTER -->
+  <div style="background:var(--bg2);border:1px solid #222;border-radius:14px;padding:24px 32px;margin-bottom:30px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px">Created by</div>
+      <div style="font-size:20px;font-weight:700;color:var(--blue);letter-spacing:1px">Tera</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px">Ambo University &nbsp;·&nbsp; Math 2052</div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 6px">💻</div>
+      <div style="font-size:11px;color:var(--muted)">Crash Course App</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px">Built by</div>
+      <div style="font-size:18px;font-weight:700;background:linear-gradient(90deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px">HHC Developers Club</div>
+      <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-end;flex-wrap:wrap">
+        <span style="background:rgba(0,212,255,.12);color:var(--blue);border:1px solid rgba(0,212,255,.25);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Logic</span>
+        <span style="background:rgba(0,255,136,.12);color:var(--green);border:1px solid rgba(0,255,136,.25);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Counting</span>
+        <span style="background:rgba(255,136,0,.12);color:var(--orange);border:1px solid rgba(255,136,0,.25);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">Probability</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+    });
+  });
+  // Smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Structures &amp; Algorithms — Crash Course</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1f2937;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #f78166;
+    --accent3: #56d364;
+    --accent4: #e3b341;
+    --accent5: #bc8cff;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --formula-bg: #0d2137;
+    --formula-border: #1f6feb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a2332 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .hero-left h1 { font-size: 1.5rem; color: var(--accent); }
+  .hero-left p { color: var(--text-muted); font-size: 0.88rem; margin-top: 5px; }
+  .made-by {
+    background: var(--surface2);
+    border: 1px solid var(--accent5);
+    border-radius: 10px;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .made-by .mb-name { font-size: 1.1rem; font-weight: 700; color: var(--accent5); }
+  .made-by .mb-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+
+  /* ── Tab Bar ── */
+  .tabs {
+    display: flex; overflow-x: auto;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    gap: 4px;
+  }
+  .tab {
+    padding: 12px 18px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Main Layout ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+  }
+  .badge-blue   { background: #1f6feb33; color: var(--accent);  border: 1px solid #1f6feb66; }
+  .badge-red    { background: #f7816622; color: var(--accent2); border: 1px solid #f7816655; }
+  .badge-green  { background: #56d36422; color: var(--accent3); border: 1px solid #56d36455; }
+  .badge-yellow { background: #e3b34122; color: var(--accent4); border: 1px solid #e3b34155; }
+  .badge-purple { background: #bc8cff22; color: var(--accent5); border: 1px solid #bc8cff55; }
+
+  .formula-box {
+    background: var(--formula-bg);
+    border: 1px solid var(--formula-border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'Consolas', monospace;
+    font-size: 1rem;
+    color: #79c0ff;
+    margin: 10px 0;
+    white-space: pre;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .formula-box .formula-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-family: 'Segoe UI', sans-serif;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  ul.checklist { list-style: none; padding: 0; }
+  ul.checklist li { padding: 5px 0; padding-left: 24px; position: relative; }
+  ul.checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--accent3); font-weight: 700; }
+
+  ul.xlist { list-style: none; padding: 0; }
+  ul.xlist li { padding: 5px 0; padding-left: 24px; position: relative; }
+  ul.xlist li::before { content: "✗"; position: absolute; left: 0; color: var(--accent2); font-weight: 700; }
+
+  .step-box {
+    counter-reset: step;
+    padding-left: 0;
+    list-style: none;
+  }
+  .step-box li {
+    counter-increment: step;
+    padding: 8px 0 8px 20px;
+    position: relative;
+    border-left: 2px solid var(--border);
+    margin-left: 16px;
+  }
+  .step-box li::before {
+    content: counter(step);
+    position: absolute;
+    left: -14px;
+    background: var(--accent);
+    color: #000;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width:700px){ .grid-2,.grid-3{grid-template-columns:1fr;} }
+
+  .highlight { color: var(--accent4); font-weight: 600; }
+  .red    { color: var(--accent2); }
+  .green  { color: var(--accent3); }
+  .blue   { color: var(--accent); }
+  .purple { color: var(--accent5); }
+
+  table.nice {
+    width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 10px;
+  }
+  table.nice th {
+    background: var(--surface2); color: var(--accent);
+    padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--formula-border);
+  }
+  table.nice td {
+    padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  table.nice tr:hover td { background: #ffffff08; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  .note-box {
+    background: #111827;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .warn-box {
+    background: #1c1208;
+    border-left: 3px solid var(--accent4);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+    color: var(--accent4);
+  }
+  .danger-box {
+    background: #1c0808;
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+    color: var(--accent2);
+  }
+
+  .example-box {
+    background: #0a1628;
+    border: 1px solid #1f4068;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .example-box .ex-title {
+    color: var(--accent3);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .pill {
+    padding: 5px 14px; border-radius: 20px; font-size: 0.8rem;
+    font-weight: 500; border: 1px solid; cursor: default;
+  }
+
+  /* ── Self-Test ── */
+  .question-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+  }
+  .q-number { color: var(--accent5); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+  .q-text   { font-size: 1rem; margin-bottom: 14px; line-height: 1.6; }
+  .answer-area {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); padding: 12px; font-size: 0.9rem;
+    min-height: 80px; resize: vertical; font-family: inherit;
+  }
+  .answer-area:focus { outline: none; border-color: var(--accent); }
+  .reveal-btn {
+    margin-top: 10px; background: var(--surface2); color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 8px; padding: 8px 20px;
+    cursor: pointer; font-size: 0.88rem; transition: all .2s;
+  }
+  .reveal-btn:hover { background: var(--accent); color: #000; }
+  .solution-reveal {
+    display: none; background: #0a1628; border: 1px solid #1f4068;
+    border-radius: 8px; padding: 16px; margin-top: 12px;
+    animation: fadeIn .3s ease;
+  }
+  .solution-reveal.show { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── Revision Sheet ── */
+  .rev-block { background: var(--surface2); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .rev-block h3 { color: var(--accent4); font-size: 0.9rem; margin-bottom: 8px; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  code {
+    background: #1c2a3a; padding: 2px 6px; border-radius: 4px;
+    font-family: Consolas, monospace; font-size: 0.9em; color: #79c0ff;
+  }
+
+  p { line-height: 1.65; }
+  h2.section-title { font-size: 1.3rem; margin-bottom: 22px; color: var(--text); }
+  h3.sub-title { font-size: 1rem; font-weight: 600; margin: 16px 0 10px; color: var(--accent); }
+  small { color: var(--text-muted); font-size: 0.82rem; }
+
+  /* ── Method color labels ── */
+  .method-bubble   { color: #58a6ff; }
+  .method-select   { color: #f78166; }
+  .method-insert   { color: #56d364; }
+  .method-linear   { color: #e3b341; }
+  .method-binary   { color: #bc8cff; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 28px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-top: 40px;
+  }
+  .footer strong { color: var(--accent5); }
+
+  .complexity-best   { color: var(--accent3); font-weight: 700; }
+  .complexity-avg    { color: var(--accent4); font-weight: 600; }
+  .complexity-worst  { color: var(--accent2); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<div class="hero">
+  <div class="hero-left">
+    <h1>🖥️ Data Structures &amp; Algorithms — Crash Course</h1>
+    <p>Chapter 1.1: Data Structures &nbsp;·&nbsp; Chapter 1.2: Algorithm Concepts &nbsp;·&nbsp; Chapter 2: Sorting &amp; Searching</p>
+    <p style="margin-top:4px;">Exam-Focused · Zero to Ready · Personal Study Edition</p>
+  </div>
+  <div class="made-by">
+    <div class="mb-name">Made by Tera</div>
+    <div class="mb-sub">HHC Developers Club</div>
+    <div class="mb-sub" style="margin-top:4px; color: var(--accent4);">Personal Study Edition</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TABS ═══════════════════════ -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview',this)">📖 Overview</div>
+  <div class="tab" onclick="switchTab('ch11',this)">🗂️ Ch1.1: Data Structures</div>
+  <div class="tab" onclick="switchTab('ch12',this)">⚙️ Ch1.2: Algorithms</div>
+  <div class="tab" onclick="switchTab('sorting',this)">🔀 Ch2: Sorting</div>
+  <div class="tab" onclick="switchTab('searching',this)">🔍 Ch2: Searching</div>
+  <div class="tab" onclick="switchTab('revision',this)">📋 Quick Revision</div>
+  <div class="tab" onclick="switchTab('test',this)">✏️ Self-Test</div>
+</div>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<div class="main">
+
+<!-- ────────────────── OVERVIEW ────────────────── -->
+<div id="overview" class="section active">
+  <h2 class="section-title">📖 Course Overview</h2>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-blue">CH 1.1</span> Data Structures</div>
+      <p>A data structure is a way of <strong>organizing and storing data</strong> in memory for efficient access and modification.</p>
+      <div class="note-box" style="margin-top:10px;">Data Structure = how data is stored. ADT = what operations it supports (without saying how).</div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>Linear vs Non-linear types</li>
+        <li>ADT and Abstraction</li>
+        <li>Static vs Dynamic structures</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-yellow">CH 1.2</span> Algorithm Concepts</div>
+      <p>An algorithm is a <strong>finite, step-by-step procedure</strong> to solve a problem. We analyze algorithms by their time and space complexity.</p>
+      <div class="note-box" style="margin-top:10px;">Big-O = worst case upper bound. We focus on worst case to guarantee performance.</div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>5 Properties of an algorithm</li>
+        <li>Big-O, Big-Ω, Big-Θ</li>
+        <li>Best / Average / Worst case</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">CH 2</span> Sorting &amp; Searching</div>
+      <p>Three sorting algorithms and two searching algorithms. Every algorithm has a step-by-step procedure and a time complexity.</p>
+      <div class="note-box" style="margin-top:10px;">Binary Search requires a sorted array. Bubble/Selection/Insertion all have O(n²) worst case.</div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>Bubble, Selection, Insertion Sort</li>
+        <li>Linear Search &amp; Binary Search</li>
+        <li>Pointer Sort (basic concept)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⭐ TOP 10 THINGS YOU MUST KNOW FOR THE EXAM</div>
+    <table class="nice">
+      <tr><th>#</th><th>Topic</th><th>Exam Weight</th><th>Priority</th></tr>
+      <tr><td>1</td><td>What is a Data Structure + Linear vs Non-Linear</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>2</td><td>ADT vs Data Structure (key difference)</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>3</td><td>5 Properties of an Algorithm</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>4</td><td>Big-O, Big-Ω, Big-Θ — definitions &amp; differences</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>5</td><td>Best / Average / Worst Case (with examples)</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>6</td><td>Bubble Sort — step-by-step + complexity</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>7</td><td>Selection Sort — step-by-step + always O(n²)</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>8</td><td>Insertion Sort — step-by-step + best case O(n)</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>9</td><td>Binary Search — halving + O(log n) + MUST be sorted</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>10</td><td>Complexity class ordering: O(1) → O(log n) → O(n) → O(n²)</td><td>⭐⭐⭐</td><td><span class="badge badge-yellow">MEDIUM</span></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚡ Quick Complexity Reference</div>
+    <table class="nice">
+      <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Key Requirement</th></tr>
+      <tr><td class="method-bubble">Bubble Sort</td><td class="complexity-best">O(n)</td><td class="complexity-avg">O(n²)</td><td class="complexity-worst">O(n²)</td><td>None</td></tr>
+      <tr><td class="method-select">Selection Sort</td><td class="complexity-worst">O(n²)</td><td class="complexity-worst">O(n²)</td><td class="complexity-worst">O(n²)</td><td>None — always O(n²)</td></tr>
+      <tr><td class="method-insert">Insertion Sort</td><td class="complexity-best">O(n)</td><td class="complexity-avg">O(n²)</td><td class="complexity-worst">O(n²)</td><td>None</td></tr>
+      <tr><td class="method-linear">Linear Search</td><td class="complexity-best">O(1)</td><td class="complexity-avg">O(n)</td><td class="complexity-worst">O(n)</td><td>None (unsorted OK)</td></tr>
+      <tr><td class="method-binary">Binary Search</td><td class="complexity-best">O(1)</td><td class="complexity-avg">O(log n)</td><td class="complexity-avg">O(log n)</td><td><strong>Must be sorted ⚠️</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ────────────────── CH 1.1 DATA STRUCTURES ────────────────── -->
+<div id="ch11" class="section">
+  <h2 class="section-title">🗂️ Chapter 1.1: Introduction to Data Structures</h2>
+
+  <!-- What is a DS -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">TOPIC 1</span> What is a Data Structure? ⚠️</div>
+    <p>A <strong>Data Structure</strong> is a way of <span class="highlight">organizing and storing data</span> in a computer so it can be accessed and modified efficiently.</p>
+    <div class="note-box">A phone contacts list is a data structure — names and numbers stored in an organized way so you can find any contact fast.</div>
+
+    <h3 class="sub-title">Common Examples</h3>
+    <div class="formula-box">Array       → row of boxes, each holds one item
+Stack       → pile of plates (Last In, First Out)
+Queue       → people waiting in line (First In, First Out)
+Linked List → chain of nodes, each pointing to the next
+Tree        → family tree (root → branches → leaves)
+Graph       → cities connected by roads</div>
+
+    <h3 class="sub-title">Linear vs Non-Linear</h3>
+    <table class="nice">
+      <tr><th>Type</th><th>Meaning</th><th>Examples</th></tr>
+      <tr><td class="blue"><strong>Linear</strong></td><td>Elements in a sequence, one after another</td><td>Array, Stack, Queue, Linked List</td></tr>
+      <tr><td class="highlight"><strong>Non-Linear</strong></td><td>Elements in a hierarchy or network</td><td>Tree, Graph</td></tr>
+    </table>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Define Data Structure. Give 3 examples.<br>
+      <span class="green">Answer: A way of organizing data for efficient access. Examples: Array, Stack, Tree.</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Is a Queue linear or non-linear? Why?<br>
+      <span class="green">Answer: Linear — elements are arranged in sequence. First in, first out.</span></p>
+    </div>
+  </div>
+
+  <!-- Algorithm vs DS -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-yellow">TOPIC 2</span> Algorithm vs Data Structure ⚠️</div>
+    <div class="grid-2">
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent);">
+        <strong class="blue">Data Structure</strong>
+        <p style="font-size:0.88rem; margin-top:8px;">HOW data is <strong>stored/organized</strong> in memory.<br>
+        Example: Array of phone contacts</p>
+      </div>
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent4);">
+        <strong class="highlight">Algorithm</strong>
+        <p style="font-size:0.88rem; margin-top:8px;">The <strong>steps</strong> to process or operate on data.<br>
+        Example: Binary Search to find a contact</p>
+      </div>
+    </div>
+    <div class="note-box" style="margin-top:14px;">
+      <strong>Analogy:</strong> Data structure = the kitchen (where things are stored). Algorithm = the recipe (steps to cook). You need both.
+    </div>
+    <table class="nice" style="margin-top:12px;">
+      <tr><th></th><th>Data Structure</th><th>Algorithm</th></tr>
+      <tr><td>Focus</td><td>Organization of data</td><td>Steps to solve a problem</td></tr>
+      <tr><td>Example</td><td>Array, Stack, Tree</td><td>Bubble Sort, Binary Search</td></tr>
+      <tr><td>Analogy</td><td>Kitchen / warehouse</td><td>Recipe / instruction manual</td></tr>
+    </table>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> What is the difference between an algorithm and a data structure?<br>
+      <span class="green">Answer: A data structure organizes/stores data. An algorithm is a step-by-step procedure to process it.</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Give one example of an algorithm operating on a data structure.<br>
+      <span class="green">Answer: Bubble Sort (algorithm) operating on an Array (data structure).</span></p>
+    </div>
+  </div>
+
+  <!-- ADT -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-purple">TOPIC 3</span> ADT and Abstraction ⚠️</div>
+    <p><strong>ADT (Abstract Data Type)</strong> defines <span class="highlight">WHAT operations</span> a data structure supports — without specifying HOW they are implemented.</p>
+    <p style="margin-top:8px;"><strong>Abstraction</strong> means <span class="blue">hiding internal details</span> and exposing only what the user needs to know.</p>
+
+    <div class="note-box" style="margin-top:10px;">
+      Analogy: A TV remote is an ADT. You press "Volume Up" and it works. You don't see the electronics inside — that detail is hidden (abstraction).
+    </div>
+
+    <h3 class="sub-title">Stack ADT Example</h3>
+    <div class="formula-box">ADT: Stack
+  push(x)    → add item to top
+  pop()      → remove top item
+  peek()     → see top without removing
+  isEmpty()  → check if empty
+
+HOW it works → hidden (could be array OR linked list)</div>
+
+    <table class="nice" style="margin-top:12px;">
+      <tr><th></th><th>ADT</th><th>Data Structure</th></tr>
+      <tr><td>Focus</td><td class="blue">WHAT (logical view)</td><td class="highlight">HOW (physical view)</td></tr>
+      <tr><td>Details</td><td>Abstract / interface</td><td>Concrete implementation</td></tr>
+      <tr><td>Example</td><td>Stack ADT</td><td>Array-based Stack</td></tr>
+    </table>
+
+    <div class="danger-box" style="margin-top:12px;">
+      ⚠️ TRAP: ADT ≠ Data Structure. ADT is the interface (what it does). Data structure is the actual implementation. Common mistake: saying they are the same thing.
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> What is an ADT? How is it different from a data structure?<br>
+      <span class="green">Answer: ADT defines what operations exist and what they do, without implementation. A data structure is the actual concrete implementation.</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Give an example of abstraction in data structures.<br>
+      <span class="green">Answer: Calling sort() in C++ — you use it without knowing which sorting algorithm runs inside.</span></p>
+    </div>
+  </div>
+
+  <!-- Types of DS -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-green">TOPIC 4</span> Types of Data Structures</div>
+    <div class="formula-box">DATA STRUCTURES
+├── Primitive (built-in types)
+│     int, float, char, bool
+│
+└── Non-Primitive (complex)
+      ├── Linear
+      │     Array, Stack, Queue, Linked List
+      └── Non-Linear
+            Tree, Graph</div>
+
+    <table class="nice" style="margin-top:14px;">
+      <tr><th></th><th>Static</th><th>Dynamic</th></tr>
+      <tr><td><strong>Size</strong></td><td>Fixed at compile time</td><td>Grows/shrinks at runtime</td></tr>
+      <tr><td><strong>Memory</strong></td><td>Allocated once</td><td>Allocated as needed</td></tr>
+      <tr><td><strong>Example</strong></td><td class="blue">Array</td><td class="green">Linked List</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ────────────────── CH 1.2 ALGORITHMS ────────────────── -->
+<div id="ch12" class="section">
+  <h2 class="section-title">⚙️ Chapter 1.2: Algorithm Concepts</h2>
+
+  <!-- What is an Algorithm -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">TOPIC 5</span> What is an Algorithm? ⚠️</div>
+    <p>An algorithm is a <span class="highlight">finite, step-by-step set of instructions</span> for solving a specific problem. It takes input, processes it, and produces output.</p>
+    <div class="note-box">Analogy: A recipe for injera. Exact steps, a clear start, a definite end, and always gives you injera if you follow it correctly.</div>
+  </div>
+
+  <!-- 5 Properties -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-red">TOPIC 5b</span> 5 Properties of an Algorithm ⚠️ 🔁</div>
+    <div class="warn-box">⭐ This is very likely to appear in your exam. Memorize all 5 with one-line explanations.</div>
+    <div class="grid-2" style="margin-top:12px;">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent);">
+        <strong class="blue">1. Input</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Has zero or more inputs.<br><em>Example: numbers to be sorted</em></p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent3);">
+        <strong class="green">2. Output</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Has at least one output.<br><em>Example: the sorted list</em></p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent4);">
+        <strong class="highlight">3. Definiteness</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Every step is clear and unambiguous.<br><em>✓ "Add 1 to x" &nbsp; ✗ "Do something to x"</em></p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent2);">
+        <strong class="red">4. Finiteness</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Must terminate after a finite number of steps.<br><em>Cannot loop forever!</em></p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent5);">
+        <strong class="purple">5. Effectiveness</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Every step must be basic and executable.<br><em>No magical or impossible steps</em></p>
+      </div>
+      <div style="padding:12px; background:#1c0808; border-radius:8px; border-left:3px solid var(--accent2);">
+        <strong class="red">⚠️ TRAP</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">An infinite loop violates <strong>Finiteness</strong> → it is NOT a valid algorithm.<br><code>while(true){}</code> ← invalid algorithm!</p>
+      </div>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> List and explain the 5 properties of an algorithm.<br>
+      <span class="green">Answer: Input, Output, Definiteness (clear steps), Finiteness (must terminate), Effectiveness (each step is doable).</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Is an infinite loop a valid algorithm? Why not?<br>
+      <span class="green">Answer: No — it violates the Finiteness property. An algorithm must always terminate in a finite number of steps.</span></p>
+    </div>
+  </div>
+
+  <!-- Complexity -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-yellow">TOPIC 6</span> Complexity Analysis ⚠️</div>
+    <div class="grid-2">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="blue">Time Complexity</strong>
+        <p style="font-size:0.88rem; margin-top:8px;">How the <strong>running time</strong> grows as input size <strong>n</strong> increases.</p>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">We use n, not seconds — different computers run at different speeds.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="highlight">Space Complexity</strong>
+        <p style="font-size:0.88rem; margin-top:8px;">How much <strong>extra memory</strong> the algorithm needs as n grows.</p>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">O(1) space = constant extra memory (a few variables only).</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Complexity Classes — Fastest to Slowest</h3>
+    <table class="nice">
+      <tr><th>Notation</th><th>Name</th><th>Growth</th><th>Example</th></tr>
+      <tr><td class="complexity-best">O(1)</td><td>Constant</td><td class="complexity-best">Never changes</td><td>Access array by index</td></tr>
+      <tr><td class="complexity-best">O(log n)</td><td>Logarithmic</td><td class="complexity-best">Very slow growth</td><td>Binary Search</td></tr>
+      <tr><td>O(n)</td><td>Linear</td><td>Proportional</td><td>Linear Search</td></tr>
+      <tr><td class="complexity-avg">O(n log n)</td><td>Log-linear</td><td class="complexity-avg">Moderate</td><td>Merge Sort</td></tr>
+      <tr><td class="complexity-worst">O(n²)</td><td>Quadratic</td><td class="complexity-worst">Fast growth</td><td>Bubble / Selection / Insertion Sort</td></tr>
+      <tr><td class="complexity-worst">O(2ⁿ)</td><td>Exponential</td><td class="complexity-worst">Explosive</td><td>Brute force recursion</td></tr>
+    </table>
+    <div class="note-box" style="margin-top:10px;">Speed ranking: <strong class="green">O(1) &gt; O(log n) &gt; O(n) &gt; O(n log n) &gt; O(n²) &gt; O(2ⁿ)</strong></div>
+  </div>
+
+  <!-- Big-O Omega Theta -->
+  <div class="card" style="border-color: var(--accent4);">
+    <div class="card-title"><span class="badge badge-yellow">TOPIC 7</span> Big-O, Big-Ω, Big-Θ — Asymptotic Notation ⚠️ 🔁</div>
+
+    <div class="grid-3">
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent2);">
+        <strong class="red">Big-O (O) — Upper Bound</strong>
+        <p style="font-size:0.85rem; margin-top:8px;"><strong>WORST CASE</strong> — algorithm takes AT MOST this long.</p>
+        <div class="formula-box" style="font-size:0.85rem; margin-top:8px;">f(n) = O(g(n))
+→ f grows no faster than g
+
+Example:
+  Linear Search → O(n)
+  (worst: check all n items)</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">Analogy: "Trip takes AT MOST 2 hours."</p>
+      </div>
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent3);">
+        <strong class="green">Big-Ω (Ω) — Lower Bound</strong>
+        <p style="font-size:0.85rem; margin-top:8px;"><strong>BEST CASE</strong> — algorithm takes AT LEAST this long.</p>
+        <div class="formula-box" style="font-size:0.85rem; margin-top:8px;">f(n) = Ω(g(n))
+→ f grows at least as fast as g
+
+Example:
+  Linear Search → Ω(1)
+  (best: target is first element)</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">Analogy: "Trip takes AT LEAST 30 min."</p>
+      </div>
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent);">
+        <strong class="blue">Big-Θ (Θ) — Tight Bound</strong>
+        <p style="font-size:0.85rem; margin-top:8px;"><strong>EXACT / ALWAYS</strong> — always exactly this long.</p>
+        <div class="formula-box" style="font-size:0.85rem; margin-top:8px;">f(n) = Θ(g(n))
+→ f is BOTH O(g) AND Ω(g)
+
+Example:
+  Bubble Sort → Θ(n²)
+  (always exactly O(n²) and Ω(n²))</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">Analogy: "Trip always takes exactly 1h ± 10min."</p>
+      </div>
+    </div>
+
+    <table class="nice" style="margin-top:14px;">
+      <tr><th>Notation</th><th>Bound Type</th><th>Meaning</th><th>Case</th></tr>
+      <tr><td class="red"><strong>O(g(n))</strong></td><td>Upper</td><td>At MOST g(n)</td><td class="complexity-worst">Worst Case</td></tr>
+      <tr><td class="green"><strong>Ω(g(n))</strong></td><td>Lower</td><td>At LEAST g(n)</td><td class="complexity-best">Best Case</td></tr>
+      <tr><td class="blue"><strong>Θ(g(n))</strong></td><td>Tight</td><td>EXACTLY g(n)</td><td class="complexity-avg">Average / Always</td></tr>
+    </table>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> What is Big-O notation? What does O(n²) mean?<br>
+      <span class="green">Answer: Big-O gives the upper bound (worst case) growth rate. O(n²) means time grows proportionally to n² as input size n increases.</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> What is the difference between O, Ω, and Θ?<br>
+      <span class="green">Answer: O = upper bound (worst), Ω = lower bound (best), Θ = tight bound (exact/always).</span></p>
+    </div>
+  </div>
+
+  <!-- Best Avg Worst -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-green">TOPIC 8</span> Best, Average, Worst Case ⚠️</div>
+    <p>For the same algorithm, <strong>different inputs give different running times.</strong></p>
+    <div class="formula-box">Best Case    → luckiest input possible (fastest result)
+Average Case → typical / random input
+Worst Case   → unluckiest input (slowest result)</div>
+
+    <table class="nice" style="margin-top:12px;">
+      <tr><th>Case</th><th>Meaning</th><th>Linear Search</th><th>Bubble Sort</th></tr>
+      <tr>
+        <td class="complexity-best"><strong>Best</strong></td>
+        <td>Luckiest input</td>
+        <td>Target at index 0 → <span class="complexity-best">O(1)</span></td>
+        <td>Already sorted → <span class="complexity-best">O(n)</span></td>
+      </tr>
+      <tr>
+        <td class="complexity-avg"><strong>Average</strong></td>
+        <td>Typical random input</td>
+        <td>Target near middle → <span class="complexity-avg">O(n)</span></td>
+        <td>Random order → <span class="complexity-avg">O(n²)</span></td>
+      </tr>
+      <tr>
+        <td class="complexity-worst"><strong>Worst</strong></td>
+        <td>Unluckiest input</td>
+        <td>Target last or not found → <span class="complexity-worst">O(n)</span></td>
+        <td>Reverse sorted → <span class="complexity-worst">O(n²)</span></td>
+      </tr>
+    </table>
+    <div class="note-box" style="margin-top:10px;">We usually focus on <strong>worst case</strong> — it guarantees the maximum time the algorithm will EVER take.</div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> For linear search, what is the best and worst case time complexity?<br>
+      <span class="green">Answer: Best case: O(1) (target is first element). Worst case: O(n) (target is last or not found).</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Why do we usually focus on worst-case complexity?<br>
+      <span class="green">Answer: It gives an upper limit guarantee — the maximum time the algorithm will ever take, which is most useful for reliability.</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────── CH 2 SORTING ────────────────── -->
+<div id="sorting" class="section">
+  <h2 class="section-title">🔀 Chapter 2: Sorting Algorithms</h2>
+
+  <!-- Bubble Sort -->
+  <div class="card" style="border-color: var(--accent);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Sort 1</span>
+      &nbsp;Bubble Sort ⚠️ 🔁
+    </div>
+    <p><strong>Principle:</strong> Compare <strong>adjacent elements</strong>. Swap if in wrong order. After each pass, the largest element "bubbles up" to the end. Repeat until sorted.</p>
+    <div class="note-box">Analogy: Sorting playing cards — compare two side-by-side, swap if needed, keep going pass by pass.</div>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Outer loop: i = 0 to n-2 (number of passes)</li>
+      <li>Inner loop: j = 0 to n-2-i (compare adjacent pairs)</li>
+      <li>If arr[j] &gt; arr[j+1]: swap them</li>
+      <li>Repeat until no swaps needed</li>
+    </ol>
+
+    <div class="formula-box" style="margin-top:12px;">For i = 0 to n-2:
+  For j = 0 to n-2-i:
+    If arr[j] > arr[j+1]:
+      swap(arr[j], arr[j+1])</div>
+
+    <div class="example-box">
+      <div class="ex-title">Full Worked Example — Sort [5, 3, 8, 1]</div>
+      <div class="formula-box">Pass 1:
+  [5, 3, 8, 1]  5>3 → swap  → [3, 5, 8, 1]
+  [3, 5, 8, 1]  5<8 → keep  → [3, 5, 8, 1]
+  [3, 5, 8, 1]  8>1 → swap  → [3, 5, 1, 8]  ← 8 settled at end
+
+Pass 2:
+  [3, 5, 1, 8]  3<5 → keep
+  [3, 5, 1, 8]  5>1 → swap  → [3, 1, 5, 8]  ← 5 settled
+
+Pass 3:
+  [3, 1, 5, 8]  3>1 → swap  → [1, 3, 5, 8]  ✓ SORTED</div>
+    </div>
+
+    <div class="grid-3" style="margin-top:14px;">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent3);">
+        <strong class="green">Best Case — O(n)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Array already sorted → no swaps. With early-exit optimization.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent4);">
+        <strong class="highlight">Average Case — O(n²)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Random order input.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent2);">
+        <strong class="red">Worst Case — O(n²)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Reverse sorted array. Maximum swaps every pass.</p>
+      </div>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Sort [4, 2, 7, 1] using Bubble Sort. Show Pass 1 completely.<br>
+      <span class="green">Answer: 4&gt;2→swap→[2,4,7,1] | 4&lt;7→keep | 7&gt;1→swap→[2,4,1,7]</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> What is the worst-case time complexity of Bubble Sort? When does it occur?<br>
+      <span class="green">Answer: O(n²). When the array is sorted in reverse order — maximum swaps are needed at every pass.</span></p>
+    </div>
+  </div>
+
+  <!-- Selection Sort -->
+  <div class="card" style="border-color: var(--accent2);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent2); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Sort 2</span>
+      &nbsp;Selection Sort ⚠️ 🔁
+    </div>
+    <p><strong>Principle:</strong> Find the <strong>minimum element</strong> in the unsorted portion. Swap it to the front of that portion. Repeat for the rest.</p>
+    <div class="note-box">Analogy: Sorting books — scan the pile, pick the smallest-numbered book, place it first. Scan the rest, pick the next smallest, place it second. Keep going.</div>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Set minIndex = i (assume current position is min)</li>
+      <li>Scan from i+1 to end — find actual minimum position</li>
+      <li>Swap arr[i] with arr[minIndex]</li>
+      <li>Move i forward and repeat</li>
+    </ol>
+
+    <div class="formula-box">For i = 0 to n-2:
+  minIndex = i
+  For j = i+1 to n-1:
+    If arr[j] < arr[minIndex]:
+      minIndex = j
+  swap(arr[i], arr[minIndex])</div>
+
+    <div class="example-box">
+      <div class="ex-title">Full Worked Example — Sort [5, 3, 8, 1]</div>
+      <div class="formula-box">Pass 1: scan [5,3,8,1] → min=1 at index 3 → swap index 0 and 3
+  → [1, 3, 8, 5]
+
+Pass 2: scan [3,8,5] → min=3 at index 1 → already in place
+  → [1, 3, 8, 5]
+
+Pass 3: scan [8,5] → min=5 at index 3 → swap index 2 and 3
+  → [1, 3, 5, 8]  ✓ SORTED</div>
+    </div>
+
+    <div class="warn-box">
+      <strong>⭐ KEY FACT — Always O(n²):</strong> Selection Sort is ALWAYS O(n²) regardless of input order. It always scans the entire unsorted portion to find the minimum — it never stops early.
+    </div>
+
+    <table class="nice" style="margin-top:10px;">
+      <tr><th>Case</th><th>Time</th><th>Why?</th></tr>
+      <tr><td class="complexity-worst">Best</td><td class="complexity-worst">O(n²)</td><td>Still scans the entire unsorted part</td></tr>
+      <tr><td class="complexity-worst">Average</td><td class="complexity-worst">O(n²)</td><td>No early exit possible</td></tr>
+      <tr><td class="complexity-worst">Worst</td><td class="complexity-worst">O(n²)</td><td>Never improves</td></tr>
+    </table>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Sort [6, 2, 4, 1] using Selection Sort. Show all passes.<br>
+      <span class="green">Answer: Pass1:min=1→[1,2,4,6] | Pass2:min=2 in place | Pass3:min=4 in place → [1,2,4,6] ✓</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Why is Selection Sort always O(n²) even in the best case?<br>
+      <span class="green">Answer: Because it always scans the entire unsorted portion to find the minimum — it never stops early, regardless of the input order.</span></p>
+    </div>
+  </div>
+
+  <!-- Insertion Sort -->
+  <div class="card" style="border-color: var(--accent3);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent3); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Sort 3</span>
+      &nbsp;Insertion Sort ⚠️ 🔁
+    </div>
+    <p><strong>Principle:</strong> Take one element at a time. <strong>Insert it into the correct position</strong> among the already-sorted elements on the left, shifting others right to make room.</p>
+    <div class="note-box">Analogy: Sorting cards in your hand. Pick up one card at a time and slide it into the right spot among the cards you're already holding.</div>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Start from index 1 (first element is trivially sorted)</li>
+      <li>Save arr[i] as key</li>
+      <li>Compare key with elements to its left, shift right if larger</li>
+      <li>Insert key at correct position</li>
+    </ol>
+
+    <div class="formula-box">For i = 1 to n-1:
+  key = arr[i]
+  j = i - 1
+  While j >= 0 AND arr[j] > key:
+    arr[j+1] = arr[j]   ← shift right to make room
+    j = j - 1
+  arr[j+1] = key        ← insert key in correct spot</div>
+
+    <div class="example-box">
+      <div class="ex-title">Full Worked Example — Sort [5, 3, 8, 1]</div>
+      <div class="formula-box">Step 1: key=3. arr[0]=5 > 3 → shift right. Insert 3 at front.
+  → [3, 5, 8, 1]
+
+Step 2: key=8. arr[1]=5 < 8 → stop. 8 stays in place.
+  → [3, 5, 8, 1]
+
+Step 3: key=1. arr[2]=8>1→shift, arr[1]=5>1→shift, arr[0]=3>1→shift.
+        Insert 1 at front.
+  → [1, 3, 5, 8]  ✓ SORTED</div>
+    </div>
+
+    <div class="grid-3" style="margin-top:14px;">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent3);">
+        <strong class="green">Best Case — O(n)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Already sorted → no shifts needed, one comparison per element.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent4);">
+        <strong class="highlight">Average Case — O(n²)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Random order → partial shifts needed.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent2);">
+        <strong class="red">Worst Case — O(n²)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Reverse sorted → maximum shifts at every step.</p>
+      </div>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Sort [4, 2, 5, 1] using Insertion Sort. Show all steps.<br>
+      <span class="green">Answer: key=2: 4&gt;2 shift → [2,4,5,1] | key=5: 4&lt;5 stay → [2,4,5,1] | key=1: shift 5,4,2 → [1,2,4,5] ✓</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> When is Insertion Sort O(n)?<br>
+      <span class="green">Answer: When the array is already sorted — no shifts are needed, just one comparison per element in the outer loop.</span></p>
+    </div>
+  </div>
+
+  <!-- Sorting Comparison -->
+  <div class="card" style="background: var(--surface2);">
+    <div class="card-title">📊 Sorting Algorithms — Full Comparison</div>
+    <table class="nice">
+      <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Key Idea</th></tr>
+      <tr>
+        <td class="method-bubble"><strong>Bubble Sort</strong></td>
+        <td class="complexity-best">O(n)</td>
+        <td class="complexity-avg">O(n²)</td>
+        <td class="complexity-worst">O(n²)</td>
+        <td>O(1)</td>
+        <td>Swap adjacent pairs, max bubbles to end each pass</td>
+      </tr>
+      <tr>
+        <td class="method-select"><strong>Selection Sort</strong></td>
+        <td class="complexity-worst">O(n²)</td>
+        <td class="complexity-worst">O(n²)</td>
+        <td class="complexity-worst">O(n²)</td>
+        <td>O(1)</td>
+        <td>Find minimum, place at front. Always O(n²).</td>
+      </tr>
+      <tr>
+        <td class="method-insert"><strong>Insertion Sort</strong></td>
+        <td class="complexity-best">O(n)</td>
+        <td class="complexity-avg">O(n²)</td>
+        <td class="complexity-worst">O(n²)</td>
+        <td>O(1)</td>
+        <td>Insert each element into correct position on left</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ────────────────── CH 2 SEARCHING ────────────────── -->
+<div id="searching" class="section">
+  <h2 class="section-title">🔍 Chapter 2: Searching Algorithms</h2>
+
+  <!-- Linear Search -->
+  <div class="card" style="border-color: var(--accent4);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent4); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Search 1</span>
+      &nbsp;Linear Search ⚠️
+    </div>
+    <p><strong>Principle:</strong> Check each element <strong>one by one</strong> from start to end until you find the target or exhaust the array.</p>
+    <div class="note-box">Analogy: Scrolling through an unsorted contact list looking for a name — you go one by one from top to bottom.</div>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <div class="formula-box">For i = 0 to n-1:
+  If arr[i] == target:
+    return i      ← FOUND at index i
+return -1         ← NOT FOUND</div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example — Search for 8 in [3, 7, 8, 2, 5]</div>
+      <div class="formula-box">Check index 0: arr[0] = 3  ≠ 8 → continue
+Check index 1: arr[1] = 7  ≠ 8 → continue
+Check index 2: arr[2] = 8  = 8 → FOUND at index 2 ✓</div>
+    </div>
+
+    <table class="nice" style="margin-top:12px;">
+      <tr><th>Case</th><th>Time</th><th>Condition</th></tr>
+      <tr><td class="complexity-best">Best</td><td class="complexity-best">O(1)</td><td>Target is the very first element</td></tr>
+      <tr><td class="complexity-avg">Average</td><td class="complexity-avg">O(n)</td><td>Target is near the middle</td></tr>
+      <tr><td class="complexity-worst">Worst</td><td class="complexity-worst">O(n)</td><td>Target is last element OR not in array</td></tr>
+    </table>
+    <div class="note-box" style="margin-top:10px;">Linear search works on <strong>both sorted and unsorted arrays</strong>. No requirements.</div>
+  </div>
+
+  <!-- Binary Search -->
+  <div class="card" style="border-color: var(--accent5);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent5); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Search 2 ⭐</span>
+      &nbsp;Binary Search ⚠️ (MOST IMPORTANT)
+    </div>
+    <p><strong>Principle:</strong> Only works on a <strong class="red">sorted array</strong>. Compare target with the <strong>middle element</strong>. Eliminate half the search space each time.</p>
+    <div class="note-box">Analogy: Dictionary search — open the middle, decide left or right, keep halving until you find the word. Much faster than reading every page.</div>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Set low = 0, high = n-1</li>
+      <li>Compute mid = (low + high) / 2</li>
+      <li>If arr[mid] == target → FOUND, return mid</li>
+      <li>If arr[mid] &lt; target → target is in right half, set low = mid + 1</li>
+      <li>If arr[mid] &gt; target → target is in left half, set high = mid - 1</li>
+      <li>Repeat from step 2. If low &gt; high → NOT FOUND, return -1</li>
+    </ol>
+
+    <div class="formula-box" style="margin-top:12px;">low = 0, high = n-1
+
+While low <= high:
+  mid = (low + high) / 2
+
+  If arr[mid] == target:
+    return mid          ← FOUND
+
+  Else if arr[mid] < target:
+    low = mid + 1       ← search RIGHT half
+
+  Else:
+    high = mid - 1      ← search LEFT half
+
+return -1               ← NOT FOUND</div>
+
+    <div class="example-box">
+      <div class="ex-title">Full Worked Example — Search for 7 in [1, 3, 5, 7, 9, 11, 13]</div>
+      <div class="formula-box">Array:  [ 1,  3,  5,  7,  9,  11,  13]
+Index:    0   1   2   3   4    5    6
+
+Step 1: low=0, high=6
+        mid = (0+6)/2 = 3
+        arr[3] = 7 == 7  →  FOUND at index 3 ✓  (1 step!)
+
+----
+
+Search for 11:
+  Step 1: mid=3, arr[3]=7 < 11  → low=4
+  Step 2: mid=(4+6)/2=5, arr[5]=11 == 11  →  FOUND ✓
+
+Search for 6 (not in array):
+  Step 1: mid=3, arr[3]=7 > 6   → high=2
+  Step 2: mid=1, arr[1]=3 < 6   → low=2
+  Step 3: mid=2, arr[2]=5 < 6   → low=3
+  Step 4: low=3 > high=2  →  return -1 (NOT FOUND)</div>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div>
+        <table class="nice">
+          <tr><th>Case</th><th>Time</th></tr>
+          <tr><td class="complexity-best">Best</td><td class="complexity-best">O(1)</td></tr>
+          <tr><td class="complexity-avg">Average</td><td class="complexity-avg">O(log n)</td></tr>
+          <tr><td class="complexity-avg">Worst</td><td class="complexity-avg">O(log n)</td></tr>
+        </table>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">With 1024 elements → only <strong>10 steps</strong> needed (log₂1024 = 10).</p>
+      </div>
+      <div style="padding:14px; background:#1c0808; border-radius:8px; border-left:3px solid var(--accent2);">
+        <strong class="red">⚠️ CRITICAL TRAP</strong>
+        <p style="font-size:0.88rem; margin-top:8px;">Binary Search <strong>REQUIRES a sorted array</strong>. On an unsorted array, the elimination logic is wrong and you will get incorrect results. Always verify the array is sorted first.</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Linear Search vs Binary Search</h3>
+    <table class="nice">
+      <tr><th></th><th>Linear Search</th><th>Binary Search</th></tr>
+      <tr><td><strong>Requirement</strong></td><td class="green">None (works unsorted)</td><td class="red">Must be sorted ⚠️</td></tr>
+      <tr><td><strong>Best Case</strong></td><td class="complexity-best">O(1)</td><td class="complexity-best">O(1)</td></tr>
+      <tr><td><strong>Worst Case</strong></td><td class="complexity-worst">O(n)</td><td class="complexity-avg">O(log n)</td></tr>
+      <tr><td><strong>Method</strong></td><td>Check one by one</td><td>Halve search space each step</td></tr>
+      <tr><td><strong>Best for</strong></td><td>Small or unsorted data</td><td>Large sorted data</td></tr>
+    </table>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Search for 5 in sorted array [2, 4, 5, 8, 10, 15] using Binary Search. Show all steps.<br>
+      <span class="green">Answer: low=0, high=5, mid=2, arr[2]=5 = target → FOUND at index 2 ✓ (1 step)</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Why can't Binary Search work on an unsorted array?<br>
+      <span class="green">Answer: Binary Search eliminates half the array based on comparison with middle. This only works if elements are in order — otherwise the direction decision is wrong.</span></p>
+    </div>
+  </div>
+
+  <!-- Pointer Sort -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">BONUS</span> Pointer Sort — Basic Idea</div>
+    <p>Instead of moving actual data (which can be large/expensive to move), sort an array of <strong>pointers (addresses)</strong> that point to the data. Only the pointers move, not the data itself.</p>
+    <div class="note-box">Analogy: Instead of rearranging heavy boxes in a warehouse, you rearrange sticky notes (labels) that say which box is where. The boxes don't move — only the notes change order.</div>
+    <div class="formula-box" style="margin-top:12px;">Data:      ["Zara", "Abel", "Mike"]   ← stays in place
+Pointers:  [  0,      1,      2   ]   ← original order
+
+After pointer sort (alphabetical):
+Pointers:  [  1,      2,      0   ]   ← Abel, Mike, Zara
+
+Data:       unchanged ✓</div>
+    <p style="margin-top:12px;"><strong>When to use:</strong> When data records are very large — moving pointers is much faster than swapping large objects.</p>
+  </div>
+</div>
+
+<!-- ────────────────── REVISION ────────────────── -->
+<div id="revision" class="section">
+  <h2 class="section-title">📋 Quick Revision Sheet</h2>
+
+  <div class="rev-block">
+    <h3>DATA STRUCTURES — KEY FACTS</h3>
+    <div class="pills">
+      <span class="pill" style="background:#1f6feb33; color:var(--accent); border-color:#1f6feb66;">DS = organized data storage</span>
+      <span class="pill" style="background:#e3b34122; color:var(--accent4); border-color:#e3b34155;">ADT = WHAT (not HOW)</span>
+      <span class="pill" style="background:#56d36422; color:var(--accent3); border-color:#56d36455;">Abstraction = hide details</span>
+      <span class="pill" style="background:#bc8cff22; color:var(--accent5); border-color:#bc8cff55;">Array=Static | LinkedList=Dynamic</span>
+    </div>
+    <ul class="checklist" style="margin-top:12px;">
+      <li><strong>Linear:</strong> Array, Stack, Queue, Linked List</li>
+      <li><strong>Non-Linear:</strong> Tree, Graph</li>
+      <li><strong>ADT vs DS:</strong> ADT = interface (what). DS = implementation (how)</li>
+      <li><strong>Abstraction:</strong> Using sort() without knowing which algorithm runs inside</li>
+    </ul>
+  </div>
+
+  <div class="rev-block">
+    <h3>5 ALGORITHM PROPERTIES (MEMORIZE)</h3>
+    <ul class="checklist">
+      <li><strong>Input</strong> — zero or more inputs</li>
+      <li><strong>Output</strong> — at least one output</li>
+      <li><strong>Definiteness</strong> — every step clear and unambiguous</li>
+      <li><strong>Finiteness</strong> — must terminate (no infinite loops)</li>
+      <li><strong>Effectiveness</strong> — every step is basic and executable</li>
+    </ul>
+  </div>
+
+  <div class="rev-block">
+    <h3>ASYMPTOTIC NOTATION</h3>
+    <ul class="checklist">
+      <li><strong>O(g(n))</strong> — Upper bound, WORST case, "at most g(n)"</li>
+      <li><strong>Ω(g(n))</strong> — Lower bound, BEST case, "at least g(n)"</li>
+      <li><strong>Θ(g(n))</strong> — Tight bound, ALWAYS, "exactly g(n)"</li>
+    </ul>
+    <p style="font-size:0.88rem; margin-top:8px; color:var(--text-muted);">Speed order: <strong class="green">O(1) &gt; O(log n) &gt; O(n) &gt; O(n log n) &gt; O(n²) &gt; O(2ⁿ)</strong></p>
+  </div>
+
+  <div class="rev-block" style="border-left: 3px solid var(--accent);">
+    <h3 class="method-bubble">BUBBLE SORT</h3>
+    <p style="font-size:0.9rem;"><strong>Idea:</strong> Swap adjacent pairs, bubble max to end each pass</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Best: O(n) (sorted) | Average: O(n²) | Worst: O(n²) (reverse) | Space: O(1)</p>
+  </div>
+
+  <div class="rev-block" style="border-left: 3px solid var(--accent2);">
+    <h3 class="method-select">SELECTION SORT</h3>
+    <p style="font-size:0.9rem;"><strong>Idea:</strong> Find minimum in unsorted part, place at front</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;"><strong class="red">ALWAYS O(n²)</strong> — no best case improvement. Never stops early. Space: O(1)</p>
+  </div>
+
+  <div class="rev-block" style="border-left: 3px solid var(--accent3);">
+    <h3 class="method-insert">INSERTION SORT</h3>
+    <p style="font-size:0.9rem;"><strong>Idea:</strong> Insert each element into correct position on left side</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Best: O(n) (sorted) | Average: O(n²) | Worst: O(n²) (reverse) | Space: O(1)</p>
+  </div>
+
+  <div class="rev-block" style="border-left: 3px solid var(--accent4);">
+    <h3 class="method-linear">LINEAR SEARCH</h3>
+    <p style="font-size:0.9rem;"><strong>Idea:</strong> Check elements one by one until found or end</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Best: O(1) | Worst: O(n) | Works on unsorted arrays</p>
+  </div>
+
+  <div class="rev-block" style="background: #0a1e2e; border-left: 3px solid var(--accent5);">
+    <h3 class="method-binary">BINARY SEARCH ⭐ (Most Important)</h3>
+    <p style="font-size:0.9rem;"><strong>Idea:</strong> Compare target with middle, eliminate half. mid = (low + high) / 2</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Best: O(1) | Worst: O(log n) | <strong class="red">REQUIRES sorted array!</strong></p>
+  </div>
+
+  <div class="rev-block" style="background: #0a2010;">
+    <h3 style="color:var(--accent3);">FULL COMPARISON TABLE</h3>
+    <table class="nice">
+      <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Notes</th></tr>
+      <tr><td class="method-bubble">Bubble Sort</td><td class="complexity-best">O(n)</td><td class="complexity-avg">O(n²)</td><td class="complexity-worst">O(n²)</td><td>O(1)</td><td>Swaps adjacent pairs</td></tr>
+      <tr><td class="method-select">Selection Sort</td><td class="complexity-worst">O(n²)</td><td class="complexity-worst">O(n²)</td><td class="complexity-worst">O(n²)</td><td>O(1)</td><td>Always O(n²) — no improvement</td></tr>
+      <tr><td class="method-insert">Insertion Sort</td><td class="complexity-best">O(n)</td><td class="complexity-avg">O(n²)</td><td class="complexity-worst">O(n²)</td><td>O(1)</td><td>Best on nearly-sorted data</td></tr>
+      <tr><td class="method-linear">Linear Search</td><td class="complexity-best">O(1)</td><td class="complexity-avg">O(n)</td><td class="complexity-worst">O(n)</td><td>O(1)</td><td>No requirement</td></tr>
+      <tr><td class="method-binary">Binary Search</td><td class="complexity-best">O(1)</td><td class="complexity-avg">O(log n)</td><td class="complexity-avg">O(log n)</td><td>O(1)</td><td>Must be sorted!</td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="border-color: var(--accent2); margin-top:20px;">
+    <div class="card-title">⚠️ Common Exam Traps</div>
+    <ul class="xlist">
+      <li>Selection Sort has NO best case improvement — it is ALWAYS O(n²)</li>
+      <li>Binary Search FAILS on unsorted arrays — you must sort first</li>
+      <li>ADT ≠ Data Structure — ADT is the interface, DS is the implementation</li>
+      <li>An infinite loop is NOT a valid algorithm — it violates Finiteness</li>
+      <li>Big-O = worst case (upper bound), NOT average case</li>
+      <li>Bubble and Insertion have O(n) best case — Selection Sort does NOT</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ────────────────── SELF-TEST ────────────────── -->
+<div id="test" class="section">
+  <h2 class="section-title">✏️ Self-Assessment — 5 Questions (Easy → Hard)</h2>
+  <p style="color:var(--text-muted); margin-bottom:20px;">Attempt each question independently before revealing the solution.</p>
+
+  <!-- Q1 -->
+  <div class="question-card">
+    <div class="q-number">Question 1 · Easy · Algorithm Properties</div>
+    <div class="q-text">
+      List and explain all <strong>5 properties of an algorithm</strong>, with a one-line explanation and one example for each property.
+    </div>
+    <textarea class="answer-area" placeholder="Write your answer here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol1')">Show Solution</button>
+    <div id="sol1" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <ol style="margin-top:10px; padding-left:20px; line-height:2.2;">
+        <li><strong>Input</strong> — Zero or more inputs. Example: numbers to be sorted.</li>
+        <li><strong>Output</strong> — At least one output. Example: the sorted list.</li>
+        <li><strong>Definiteness</strong> — Every step is clear. ✓ "Add 1 to x" ✗ "Do something to x"</li>
+        <li><strong>Finiteness</strong> — Must terminate. An infinite loop violates this property.</li>
+        <li><strong>Effectiveness</strong> — Each step is basic and executable by a computer.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-card">
+    <div class="q-number">Question 2 · Easy-Medium · Bubble Sort</div>
+    <div class="q-text">
+      Sort the array <strong>[6, 3, 9, 2]</strong> using Bubble Sort.<br>
+      Show every comparison and swap in <strong>all passes</strong>. State the time complexity.
+    </div>
+    <textarea class="answer-area" placeholder="Show all passes step by step..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol2')">Show Solution</button>
+    <div id="sol2" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <div class="formula-box" style="margin-top:12px;">Pass 1:
+  6>3 → swap → [3, 6, 9, 2]
+  6<9 → keep → [3, 6, 9, 2]
+  9>2 → swap → [3, 6, 2, 9]   ← 9 settled
+
+Pass 2:
+  3<6 → keep → [3, 6, 2, 9]
+  6>2 → swap → [3, 2, 6, 9]   ← 6 settled
+
+Pass 3:
+  3>2 → swap → [2, 3, 6, 9]   ✓ SORTED</div>
+      <p style="margin-top:10px;"><strong class="green">Time Complexity: O(n²)</strong> — worst/average case. Best case O(n) if already sorted.</p>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-card">
+    <div class="q-number">Question 3 · Medium · Big-O, Ω, Θ</div>
+    <div class="q-text">
+      (a) What is the difference between Big-O, Big-Ω, and Big-Θ notation?<br>
+      (b) For <strong>Selection Sort</strong>, state the Big-O, Big-Ω, and Big-Θ. Justify your answer.
+    </div>
+    <textarea class="answer-area" placeholder="Write your answer here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol3')">Show Solution</button>
+    <div id="sol3" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <p style="margin-top:10px;"><strong>(a)</strong></p>
+      <ul style="padding-left:20px; line-height:2;">
+        <li><strong>O(g(n))</strong> — Upper bound (worst case). Algorithm takes AT MOST g(n) time.</li>
+        <li><strong>Ω(g(n))</strong> — Lower bound (best case). Algorithm takes AT LEAST g(n) time.</li>
+        <li><strong>Θ(g(n))</strong> — Tight bound (always). Algorithm always takes exactly g(n) time (within constants).</li>
+      </ul>
+      <p style="margin-top:10px;"><strong>(b) Selection Sort:</strong></p>
+      <ul style="padding-left:20px; line-height:2;">
+        <li><strong>O(n²)</strong> — Worst case is O(n²)</li>
+        <li><strong>Ω(n²)</strong> — Even the best case is O(n²) because it always scans the entire unsorted portion</li>
+        <li><strong>Θ(n²)</strong> — Since best and worst are both n², the tight bound is Θ(n²)</li>
+      </ul>
+      <p style="margin-top:8px;" class="green"><strong>Selection Sort is Θ(n²) — it always takes exactly n² time.</strong></p>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-card">
+    <div class="q-number">Question 4 · Medium · Binary Search</div>
+    <div class="q-text">
+      Search for <strong>target = 14</strong> in the sorted array <strong>[2, 5, 8, 11, 14, 17, 23]</strong> using Binary Search.<br>
+      Show every step (low, high, mid, comparison). State the time complexity.
+    </div>
+    <textarea class="answer-area" placeholder="Show every step..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol4')">Show Solution</button>
+    <div id="sol4" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <div class="formula-box" style="margin-top:12px;">Array:  [ 2,  5,  8,  11,  14,  17,  23]
+Index:    0   1   2    3    4    5    6
+
+Step 1: low=0, high=6
+        mid = (0+6)/2 = 3
+        arr[3] = 11 < 14  →  go RIGHT, low = 4
+
+Step 2: low=4, high=6
+        mid = (4+6)/2 = 5
+        arr[5] = 17 > 14  →  go LEFT, high = 4
+
+Step 3: low=4, high=4
+        mid = (4+4)/2 = 4
+        arr[4] = 14 == 14  →  FOUND at index 4 ✓</div>
+      <p style="margin-top:10px;"><strong class="green">Found in 3 steps. Time Complexity: O(log n) = O(log 7) ≈ 3 steps.</strong></p>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question-card">
+    <div class="q-number">Question 5 · Hard · Compare + Explain</div>
+    <div class="q-text">
+      (a) Sort <strong>[7, 2, 9, 1, 5]</strong> using <strong>Insertion Sort</strong>. Show all steps.<br>
+      (b) Compare Bubble Sort, Selection Sort, and Insertion Sort — state best/worst case for each and identify which ALWAYS has O(n²) even in the best case.
+    </div>
+    <textarea class="answer-area" placeholder="Show all steps for part (a), then answer part (b)..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol5')">Show Solution</button>
+    <div id="sol5" class="solution-reveal">
+      <strong class="green">Part (a) — Insertion Sort on [7, 2, 9, 1, 5]:</strong>
+      <div class="formula-box" style="margin-top:10px;">Start: [7, 2, 9, 1, 5]
+i=1: key=2. 7>2→shift → [2, 7, 9, 1, 5]
+i=2: key=9. 7<9→stop  → [2, 7, 9, 1, 5]
+i=3: key=1. 9>1→shift, 7>1→shift, 2>1→shift → [1, 2, 7, 9, 5]
+i=4: key=5. 9>5→shift, 7>5→shift, 2<5→stop → [1, 2, 5, 7, 9]  ✓</div>
+      <strong class="green" style="display:block; margin-top:14px;">Part (b) — Comparison:</strong>
+      <table class="nice" style="margin-top:8px;">
+        <tr><th>Algorithm</th><th>Best</th><th>Worst</th><th>Always O(n²)?</th></tr>
+        <tr><td class="method-bubble">Bubble Sort</td><td class="complexity-best">O(n)</td><td class="complexity-worst">O(n²)</td><td class="red">No — O(n) if sorted</td></tr>
+        <tr><td class="method-select">Selection Sort</td><td class="complexity-worst">O(n²)</td><td class="complexity-worst">O(n²)</td><td class="green"><strong>YES — always O(n²)</strong></td></tr>
+        <tr><td class="method-insert">Insertion Sort</td><td class="complexity-best">O(n)</td><td class="complexity-worst">O(n²)</td><td class="red">No — O(n) if sorted</td></tr>
+      </table>
+      <p style="margin-top:8px;" class="highlight"><strong>Selection Sort ALWAYS has O(n²)</strong> — it never improves because it always scans the full unsorted portion.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<!-- ── Footer ── -->
+<div class="footer">
+  <strong>Made by Tera</strong> &nbsp;·&nbsp; HHC Developers Club &nbsp;·&nbsp; Personal Study Edition<br>
+  <span style="margin-top:6px; display:block;">Data Structures &amp; Algorithms · Chapter 1.1 · Chapter 1.2 · Chapter 2</span>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+function reveal(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+  const btn = el.previousElementSibling;
+  btn.textContent = el.classList.contains('show') ? 'Hide Solution' : 'Show Solution';
+}
+</script>
+</body>
+</html>

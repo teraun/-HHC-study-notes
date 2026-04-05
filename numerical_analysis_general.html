@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numerical Analysis — 2nd Year CS Study Guide</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1f2937;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #f78166;
+    --accent3: #56d364;
+    --accent4: #e3b341;
+    --accent5: #bc8cff;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --formula-bg: #0d2137;
+    --formula-border: #1f6feb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a2332 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .hero-left h1 { font-size: 1.5rem; color: var(--accent); }
+  .hero-left p { color: var(--text-muted); font-size: 0.88rem; margin-top: 5px; }
+  .hero-right {
+    text-align: right;
+  }
+  .made-by {
+    background: var(--surface2);
+    border: 1px solid var(--accent5);
+    border-radius: 10px;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .made-by .mb-name { font-size: 1.1rem; font-weight: 700; color: var(--accent5); }
+  .made-by .mb-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+
+  /* ── Tab Bar ── */
+  .tabs {
+    display: flex; overflow-x: auto;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    gap: 4px;
+  }
+  .tab {
+    padding: 12px 18px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Main Layout ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+  }
+  .badge-blue  { background: #1f6feb33; color: var(--accent);  border: 1px solid #1f6feb66; }
+  .badge-red   { background: #f7816622; color: var(--accent2); border: 1px solid #f7816655; }
+  .badge-green { background: #56d36422; color: var(--accent3); border: 1px solid #56d36455; }
+  .badge-yellow{ background: #e3b34122; color: var(--accent4); border: 1px solid #e3b34155; }
+  .badge-purple{ background: #bc8cff22; color: var(--accent5); border: 1px solid #bc8cff55; }
+
+  .formula-box {
+    background: var(--formula-bg);
+    border: 1px solid var(--formula-border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'Consolas', monospace;
+    font-size: 1.05rem;
+    color: #79c0ff;
+    margin: 10px 0;
+    text-align: center;
+  }
+  .formula-box .formula-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-family: 'Segoe UI', sans-serif;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  ul.checklist { list-style: none; padding: 0; }
+  ul.checklist li { padding: 5px 0; padding-left: 24px; position: relative; }
+  ul.checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--accent3); font-weight: 700; }
+
+  ul.xlist { list-style: none; padding: 0; }
+  ul.xlist li { padding: 5px 0; padding-left: 24px; position: relative; }
+  ul.xlist li::before { content: "✗"; position: absolute; left: 0; color: var(--accent2); font-weight: 700; }
+
+  .step-box {
+    counter-reset: step;
+    padding-left: 0;
+    list-style: none;
+  }
+  .step-box li {
+    counter-increment: step;
+    padding: 8px 0 8px 20px;
+    position: relative;
+    border-left: 2px solid var(--border);
+    margin-left: 16px;
+  }
+  .step-box li::before {
+    content: counter(step);
+    position: absolute;
+    left: -14px;
+    background: var(--accent);
+    color: #000;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width:700px){ .grid-2,.grid-3{grid-template-columns:1fr;} }
+
+  .highlight { color: var(--accent4); font-weight: 600; }
+  .red    { color: var(--accent2); }
+  .green  { color: var(--accent3); }
+  .blue   { color: var(--accent); }
+  .purple { color: var(--accent5); }
+
+  table.nice {
+    width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 10px;
+  }
+  table.nice th {
+    background: var(--surface2); color: var(--accent);
+    padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--formula-border);
+  }
+  table.nice td {
+    padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  table.nice tr:hover td { background: #ffffff08; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  .note-box {
+    background: #111827;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .warn-box {
+    background: #1c1208;
+    border-left: 3px solid var(--accent4);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+    color: var(--accent4);
+  }
+
+  .example-box {
+    background: #0a1628;
+    border: 1px solid #1f4068;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .example-box .ex-title {
+    color: var(--accent3);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .pill {
+    padding: 5px 14px; border-radius: 20px; font-size: 0.8rem;
+    font-weight: 500; border: 1px solid; cursor: default;
+  }
+
+  /* ── Test ── */
+  .question-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+  }
+  .q-number { color: var(--accent5); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+  .q-text   { font-size: 1rem; margin-bottom: 14px; line-height: 1.6; }
+  .answer-area {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); padding: 12px; font-size: 0.9rem;
+    min-height: 80px; resize: vertical; font-family: inherit;
+  }
+  .answer-area:focus { outline: none; border-color: var(--accent); }
+  .reveal-btn {
+    margin-top: 10px; background: var(--surface2); color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 8px; padding: 8px 20px;
+    cursor: pointer; font-size: 0.88rem; transition: all .2s;
+  }
+  .reveal-btn:hover { background: var(--accent); color: #000; }
+  .solution-reveal {
+    display: none; background: #0a1628; border: 1px solid #1f4068;
+    border-radius: 8px; padding: 16px; margin-top: 12px;
+    animation: fadeIn .3s ease;
+  }
+  .solution-reveal.show { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── Revision Sheet ── */
+  .rev-block { background: var(--surface2); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .rev-block h3 { color: var(--accent4); font-size: 0.9rem; margin-bottom: 8px; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .method-bisect { color: #58a6ff; }
+  .method-false  { color: #f78166; }
+  .method-newton { color: #56d364; }
+  .method-secant { color: #e3b341; }
+
+  code {
+    background: #1c2a3a; padding: 2px 6px; border-radius: 4px;
+    font-family: Consolas, monospace; font-size: 0.9em; color: #79c0ff;
+  }
+
+  p { line-height: 1.65; }
+  h2.section-title { font-size: 1.3rem; margin-bottom: 22px; color: var(--text); }
+  h3.sub-title { font-size: 1rem; font-weight: 600; margin: 16px 0 10px; color: var(--accent); }
+  small { color: var(--text-muted); font-size: 0.82rem; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 28px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-top: 40px;
+  }
+  .footer strong { color: var(--accent5); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<div class="hero">
+  <div class="hero-left">
+    <h1>📐 Numerical Analysis — Study Guide</h1>
+    <p>Chapter 1: Error Estimation &nbsp;·&nbsp; Chapter 2: Solutions of Non-Linear Equations</p>
+    <p style="margin-top:4px;">Ambo University &nbsp;·&nbsp; Department of Mathematics &nbsp;·&nbsp; Lecture Note by Tadesse Nigisa</p>
+  </div>
+  <div class="made-by">
+    <div class="mb-name">Made by Latera</div>
+    <div class="mb-sub">2nd Year Computer Science Students</div>
+    <div class="mb-sub" style="margin-top:4px; color: var(--accent4);">Ambo University</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TABS ═══════════════════════ -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview',this)">📖 Overview</div>
+  <div class="tab" onclick="switchTab('errors',this)">📏 Ch1: Errors</div>
+  <div class="tab" onclick="switchTab('nonlinear',this)">🔢 Ch2: Non-Linear</div>
+  <div class="tab" onclick="switchTab('methods',this)">⚙️ 4 Methods</div>
+  <div class="tab" onclick="switchTab('priority',this)">🎯 Exam Priority</div>
+  <div class="tab" onclick="switchTab('revision',this)">📋 Quick Revision</div>
+  <div class="tab" onclick="switchTab('test',this)">✏️ Self-Test</div>
+  <div class="tab" onclick="switchTab('resources',this)">🎥 Resources</div>
+</div>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<div class="main">
+
+<!-- ────────────────── OVERVIEW ────────────────── -->
+<div id="overview" class="section active">
+  <h2 class="section-title">📖 Course Overview</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-blue">CHAPTER 1</span> Error Estimation</div>
+      <p>Numerical Analysis provides approximate (not exact) solutions to mathematical problems. <strong>Error estimation</strong> is the study of how far an approximate value deviates from the true value.</p>
+      <div class="note-box" style="margin-top:10px;">
+        The fundamental relationship: <strong>Error = True Value − Approximate Value</strong>
+      </div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>Types of error: Absolute, Relative, Percentage</li>
+        <li>Sources: Inherent, Rounding, Truncation</li>
+        <li>Error propagation through functions</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-red">CHAPTER 2</span> Non-Linear Equations</div>
+      <p>Finding the roots of <code>f(x) = 0</code> where f(x) contains exponential, logarithmic, trigonometric, or polynomial terms of degree &gt; 2. These cannot be solved by simple algebra, requiring iterative numerical methods.</p>
+      <div class="note-box" style="margin-top:10px;">
+        A <strong>root (zero)</strong> of f(x) = 0 is a value α such that f(α) = 0. Geometrically, it is where the curve y = f(x) crosses the x-axis.
+      </div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>4 iterative methods: Bisection, False Position, Newton-Raphson, Secant</li>
+        <li>Root location using Intermediate Value Theorem</li>
+        <li>Convergence criteria and stopping conditions</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Topic Overview & Priority</div>
+    <table class="nice">
+      <tr><th>Chapter</th><th>Topic</th><th>Exam Weight</th><th>Priority</th></tr>
+      <tr><td>1</td><td>Absolute, Relative & Percentage Error</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>1</td><td>Propagation of Errors in Functions</td><td>⭐⭐⭐</td><td><span class="badge badge-yellow">MEDIUM</span></td></tr>
+      <tr><td>1</td><td>Rounding vs Truncation Error</td><td>⭐⭐</td><td><span class="badge badge-blue">KNOW</span></td></tr>
+      <tr><td>2</td><td>Bisection Method</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>2</td><td>False Position (Regula Falsi)</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>2</td><td>Newton-Raphson Method</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>2</td><td>Secant Method</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>2</td><td>Root Location & Descartes' Rule</td><td>⭐⭐⭐</td><td><span class="badge badge-blue">KNOW</span></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📌 Key Definitions</div>
+    <div class="grid-2">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="blue">Algebraic Equation</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Contains only polynomial terms.<br>
+        e.g. 3x³ − 2x² − x − 5 = 0</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="highlight">Transcendental Equation</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Contains exp, log, or trig functions.<br>
+        e.g. xe^x − 1 = 0 &nbsp;|&nbsp; tan(x) = x</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="green">Direct Method</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Gives exact value in finite steps. Only available for polynomials up to degree 4.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="red">Iterative Method</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Starts with approximation(s), generates sequence x₀, x₁, x₂,... converging to the root.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────── ERRORS ────────────────── -->
+<div id="errors" class="section">
+  <h2 class="section-title">📏 Chapter 1: Basic Concepts in Error Estimation</h2>
+
+  <div class="card">
+    <div class="card-title">🔍 Types of Errors</div>
+    <div class="grid-3">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent);">
+        <strong class="blue">Inherent Error</strong>
+        <p style="margin-top:6px; font-size:0.88rem;">Present in the problem before computation begins. Arises from approximate input data or limitations of mathematical modeling.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent4);">
+        <strong class="highlight">Rounding Error</strong>
+        <p style="margin-top:6px; font-size:0.88rem;">Caused by rounding numbers during computation.<br>
+        Example: 13.658 rounded → 13.66<br>
+        Error = 13.66 − 13.658 = <strong>0.002</strong></p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent2);">
+        <strong class="red">Truncation Error</strong>
+        <p style="margin-top:6px; font-size:0.88rem;">Caused by replacing an infinite process with a finite one.<br>
+        Example: 13.658 truncated → 13.65<br>
+        Error = 13.658 − 13.65 = <strong>0.008</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Absolute Error -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">1</span> Absolute Error (Eₐ)</div>
+    <div class="formula-box">
+      <div class="formula-label">Formula</div>
+      Eₐ = |X − X̃|
+    </div>
+    <p><strong>Variables:</strong></p>
+    <ul class="checklist" style="margin-top:8px;">
+      <li><strong>X</strong> — True (exact) value</li>
+      <li><strong>X̃</strong> — Approximate value</li>
+      <li><strong>| · |</strong> — Absolute value (result is always non-negative)</li>
+    </ul>
+    <div class="note-box" style="margin-top:10px;">
+      The absolute error measures the <strong>magnitude of the deviation</strong> between the true and approximate value, without regard to direction.
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 1</div>
+      <p>True value X = 3.14159, Approximate value X̃ = 3.14</p>
+      <ol class="step-box" style="margin-top:12px;">
+        <li>Apply formula: Eₐ = |X − X̃|</li>
+        <li>Substitute: Eₐ = |3.14159 − 3.14|</li>
+        <li>Evaluate: Eₐ = |0.00159|</li>
+        <li class="green"><strong>Result: Eₐ = 0.00159</strong></li>
+      </ol>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 2 — From Lecture Notes</div>
+      <p>Computed value: 2.571282, True value (∛17): 2.571332</p>
+      <ol class="step-box" style="margin-top:12px;">
+        <li>Eₐ = |2.571332 − 2.571282|</li>
+        <li>Eₐ = 0.000050</li>
+        <li class="green"><strong>Result: Eₐ = 0.00005</strong> → Correct to 4 decimal places ✓</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Relative Error -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-yellow">2</span> Relative Error (Eᵣ)</div>
+    <div class="formula-box">
+      <div class="formula-label">Formula</div>
+      Eᵣ = Eₐ / |X| = |X − X̃| / |X|
+    </div>
+    <p><strong>Purpose:</strong> Expresses the error as a fraction of the true value. Relative error is <strong>independent of the units of measurement</strong> (noted in your lecture notes).</p>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 1</div>
+      <p>True = 3.14159, Approx = 3.14, Eₐ = 0.00159</p>
+      <ol class="step-box" style="margin-top:12px;">
+        <li>Eᵣ = Eₐ / |X| = 0.00159 / 3.14159</li>
+        <li><strong class="green">Result: Eᵣ ≈ 0.000506</strong></li>
+      </ol>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 2 — Error Propagation (From Lecture Notes)</div>
+      <p>Given: u = 4x²y³/z⁴, errors in x, y, z each = 0.001. Find maximum relative error at x = y = z = 1.</p>
+      <ol class="step-box" style="margin-top:12px;">
+        <li>Compute partial derivatives at x = y = z = 1:<br>
+        ∂u/∂x = 8xy³/z⁴ = 8 &nbsp;|&nbsp; ∂u/∂y = 12x²y²/z⁴ = 12 &nbsp;|&nbsp; ∂u/∂z = −16x²y³/z⁵ = −16</li>
+        <li>Maximum absolute error (take absolute values):<br>
+        δu_max ≈ |8|(0.001) + |12|(0.001) + |16|(0.001) = 0.008 + 0.012 + 0.016 = 0.036</li>
+        <li>Value of u at x = y = z = 1: u = 4(1)(1)/1 = 4</li>
+        <li>Eᵣ_max = δu / u = 0.036 / 4</li>
+        <li><strong class="green">Result: Eᵣ_max = 0.009</strong></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Percentage Error -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-green">3</span> Percentage Error (Eₚ)</div>
+    <div class="formula-box">
+      <div class="formula-label">Formula</div>
+      Eₚ = Eᵣ × 100  (%)
+    </div>
+    <p>Converts the relative error to a percentage. Useful for quick comparison of accuracy across different calculations.</p>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 1</div>
+      <p>Given Eᵣ = 0.000506 (from Example 1 above):</p>
+      <ol class="step-box" style="margin-top:12px;">
+        <li>Eₚ = Eᵣ × 100 = 0.000506 × 100</li>
+        <li><strong class="green">Result: Eₚ = 0.0506%</strong></li>
+      </ol>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 2</div>
+      <p>Given Eᵣ = 0.009 (from propagation example above):</p>
+      <ol class="step-box" style="margin-top:12px;">
+        <li>Eₚ = 0.009 × 100</li>
+        <li><strong class="green">Result: Eₚ = 0.9%</strong></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Key Remark -->
+  <div class="card" style="border-color: var(--accent4);">
+    <div class="card-title">📌 Important Remark — From Lecture Notes</div>
+    <p>If a number is correct to <strong>n decimal places</strong>, the absolute error satisfies:</p>
+    <div class="formula-box">|Error| ≤ ½ × 10⁻ⁿ</div>
+    <table class="nice" style="margin-top:12px;">
+      <tr><th>Decimal Places (n)</th><th>Maximum Absolute Error</th><th>Stopping Criterion</th></tr>
+      <tr><td>2</td><td>½ × 10⁻² = 0.005</td><td>|xₖ₊₁ − xₖ| ≤ 0.005</td></tr>
+      <tr><td>3</td><td>½ × 10⁻³ = 0.0005</td><td>|xₖ₊₁ − xₖ| ≤ 0.0005</td></tr>
+      <tr><td>4</td><td>½ × 10⁻⁴ = 0.00005</td><td>|xₖ₊₁ − xₖ| ≤ 0.00005</td></tr>
+    </table>
+  </div>
+
+  <!-- Error Propagation General -->
+  <div class="card">
+    <div class="card-title">🔗 Error Propagation in Functions</div>
+    <p>For y = f(x₁, x₂, ..., xₙ) with errors δx₁, δx₂, ..., δxₙ in the variables:</p>
+    <div class="formula-box">
+      <div class="formula-label">General Propagation Formula</div>
+      δy ≈ |∂y/∂x₁|·δx₁ + |∂y/∂x₂|·δx₂ + ··· + |∂y/∂xₙ|·δxₙ
+    </div>
+    <div class="formula-box" style="margin-top:8px;">
+      <div class="formula-label">Special Case: Product y = x₁·x₂·...·xₙ</div>
+      Eᵣ = δx₁/x₁ + δx₂/x₂ + ··· + δxₙ/xₙ
+    </div>
+    <div class="note-box">The relative error of a product equals the sum of the individual relative errors of the factors.</div>
+  </div>
+
+  <!-- Common Mistakes -->
+  <div class="card" style="border-color: var(--accent2);">
+    <div class="card-title">⚠️ Common Errors in Examinations</div>
+    <ul class="xlist">
+      <li>Omitting absolute value signs: Eₐ = |X − X̃|, not X − X̃</li>
+      <li>Dividing by X̃ (approximate) instead of X (true) in the relative error formula</li>
+      <li>Forgetting to multiply by 100 to convert relative error to percentage</li>
+      <li>Confusing rounding error with truncation error</li>
+      <li>In propagation: not taking absolute values of each partial derivative term</li>
+    </ul>
+  </div>
+
+  <div class="card" style="border-color: var(--accent5);">
+    <div class="card-title">📝 Practice Questions</div>
+    <p><strong>Q1.</strong> True value = 5.6789, Approximate = 5.68. Compute Eₐ, Eᵣ, and Eₚ.</p>
+    <hr class="divider">
+    <p><strong>Q2.</strong> A number is correct to 4 decimal places. What is the maximum absolute error?</p>
+    <hr class="divider">
+    <p><strong>Q3.</strong> y = x₁ · x₂, x₁ = 2, x₂ = 3, δx₁ = 0.01, δx₂ = 0.02. Find the maximum relative error in y.</p>
+  </div>
+</div>
+
+<!-- ────────────────── NON-LINEAR INTRO ────────────────── -->
+<div id="nonlinear" class="section">
+  <h2 class="section-title">🔢 Chapter 2: Solutions of Non-Linear Equations — Foundations</h2>
+
+  <div class="card">
+    <div class="card-title">📖 Definitions</div>
+    <div class="grid-2">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="blue">Simple Root</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">α is a simple root if <code>f(α) = 0</code> and <code>f'(α) ≠ 0</code>.<br>
+        f(x) = (x − α)g(x), where g(α) ≠ 0.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="highlight">Multiple Root</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">α is a root of multiplicity m if f(α) = f'(α) = ... = f^(m-1)(α) = 0 but f^(m)(α) ≠ 0.</p>
+      </div>
+    </div>
+    <div class="note-box" style="margin-top:12px;">
+      This chapter deals with <strong>simple roots only</strong>, as stated in the lecture notes.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📐 Intermediate Value Theorem — Root Location</div>
+    <div class="formula-box" style="text-align:left; line-height:2;">
+      <div class="formula-label">Theorem 1 (From Lecture Notes)</div>
+      If f(x) is continuous on [a, b] and <strong>f(a) · f(b) &lt; 0</strong><br>
+      → the equation f(x) = 0 has at least one real root in (a, b)
+    </div>
+    <p style="margin-top:10px;"><strong>Application:</strong> Build a table of f(x) values. Whenever two adjacent values have opposite signs, a root exists between them.</p>
+
+    <div class="example-box">
+      <div class="ex-title">Example from Lecture Notes: f(x) = 8x³ − 12x² − 2x + 3 = 0</div>
+      <table class="nice">
+        <tr><th>x</th><th>−2</th><th>−1</th><th>0</th><th>1</th><th>2</th><th>3</th></tr>
+        <tr><td>f(x)</td><td>−105</td><td>−15</td><td>3</td><td>−3</td><td>15</td><td>105</td></tr>
+      </table>
+      <p style="margin-top:10px;">Sign changes occur at intervals: (−1, 0), (0, 1), (1, 2) → <strong class="green">3 real roots</strong></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛑 Stopping Criterion — Used in All Methods</div>
+    <div class="formula-box">|xₖ₊₁ − xₖ| ≤ ε</div>
+    <p style="margin-top:10px;">Where ε is the tolerance corresponding to the required decimal accuracy. Since infinite iterations cannot be performed, iteration stops when the difference between successive approximations falls below ε.</p>
+    <div class="note-box">
+      Alternatively, the criterion <code>|f(xₖ)| ≤ ε</code> may also be used. In practice, the difference criterion is more commonly applied.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Comparison of All Four Methods</div>
+    <table class="nice">
+      <tr><th>Method</th><th>Starting Requirement</th><th>Requires f'(x)?</th><th>Convergence</th><th>Speed</th></tr>
+      <tr><td class="method-bisect">Bisection</td><td>Interval [a,b] with f(a)·f(b) &lt; 0</td><td>No</td><td>Guaranteed</td><td>Slow (linear)</td></tr>
+      <tr><td class="method-false">False Position</td><td>Interval [a,b] with f(a)·f(b) &lt; 0</td><td>No</td><td>Guaranteed</td><td>Medium</td></tr>
+      <tr><td class="method-newton">Newton-Raphson</td><td>Single point x₀ near root</td><td><strong>Yes</strong></td><td>Near root only</td><td>Fast (quadratic)</td></tr>
+      <tr><td class="method-secant">Secant</td><td>Two points x₀, x₁</td><td>No</td><td>Not guaranteed</td><td>Fast (superlinear)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ────────────────── ALL 4 METHODS ────────────────── -->
+<div id="methods" class="section">
+  <h2 class="section-title">⚙️ Four Iterative Methods — Complete Reference</h2>
+
+  <!-- BISECTION -->
+  <div class="card" style="border-color: var(--accent);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Method 1</span>
+      &nbsp;Bisection Method (Bolzano Method)
+    </div>
+    <p><strong>Principle:</strong> Based on the repeated application of the Intermediate Value Theorem. The interval containing the root is successively halved, and the sub-interval in which the sign change occurs is retained for the next iteration.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Midpoint Formula</div>
+      x₁ = (a + b) / 2
+    </div>
+
+    <div class="formula-box" style="margin-top:8px;">
+      <div class="formula-label">Number of Iterations for Accuracy ε</div>
+      n ≥ ln((b − a) / ε) / ln(2)
+    </div>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Identify interval [a, b] such that f(a) · f(b) &lt; 0</li>
+      <li>Compute midpoint: x₁ = (a + b) / 2</li>
+      <li>If f(x₁) = 0: x₁ is the exact root. Stop.</li>
+      <li>If f(a) · f(x₁) &lt; 0: root lies in [a, x₁]. Set b = x₁.</li>
+      <li>Else: root lies in [x₁, b]. Set a = x₁.</li>
+      <li>Repeat from Step 2 until |xₖ₊₁ − xₖ| ≤ ε</li>
+    </ol>
+
+    <div class="example-box">
+      <div class="ex-title">Full Example — From Lecture Notes: x³ − 4x − 9 = 0, 3 Decimal Places</div>
+      <p>f(2) = 8 − 8 − 9 = −9 &nbsp;|&nbsp; f(3) = 27 − 12 − 9 = +6 → root in (2, 3)</p>
+      <table class="nice" style="margin-top:12px; font-size:0.82rem;">
+        <tr><th>n</th><th>a</th><th>b</th><th>xₙ</th><th>f(xₙ)</th><th>New interval</th></tr>
+        <tr><td>1</td><td>2</td><td>3</td><td>2.5</td><td>−3.375</td><td>(2.5, 3)</td></tr>
+        <tr><td>2</td><td>2.5</td><td>3</td><td>2.75</td><td>+0.797</td><td>(2.5, 2.75)</td></tr>
+        <tr><td>3</td><td>2.5</td><td>2.75</td><td>2.625</td><td>−1.412</td><td>(2.625, 2.75)</td></tr>
+        <tr><td>4</td><td>2.625</td><td>2.75</td><td>2.6875</td><td>−0.339</td><td>(2.6875, 2.75)</td></tr>
+        <tr><td>5</td><td>2.6875</td><td>2.75</td><td>2.71875</td><td>+0.22</td><td>(2.6875, 2.71875)</td></tr>
+        <tr><td>⋮</td><td colspan="5">Iterations continue...</td></tr>
+        <tr><td>11</td><td colspan="3"><strong>x₁₁ = 2.70654</strong></td><td colspan="2"><span class="green">|x₁₁ − x₁₀| = 0.00012 &lt; 0.0005 ✓</span></td></tr>
+      </table>
+      <p style="margin-top:10px;"><strong class="green">Root ≈ 2.707</strong></p>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div>
+        <h3 class="sub-title">Advantages</h3>
+        <ul class="checklist">
+          <li>Guaranteed to converge</li>
+          <li>Simple algorithm</li>
+          <li>No derivative required</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="sub-title">Disadvantages</h3>
+        <ul class="xlist">
+          <li>Slow convergence</li>
+          <li>Requires a bracketing interval</li>
+          <li>Cannot find complex roots</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FALSE POSITION -->
+  <div class="card" style="border-color: var(--accent2);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent2); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Method 2</span>
+      &nbsp;Method of False Position (Regula Falsi)
+    </div>
+    <p><strong>Principle:</strong> Also called the linear interpolation method. A straight line is drawn between the two bracketing points (xₖ₋₁, fₖ₋₁) and (xₖ, fₖ). The x-intercept of this line is taken as the next approximation.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">Iteration Formula</div>
+      xₖ₊₁ = (xₖ₋₁ · f(xₖ) − xₖ · f(xₖ₋₁)) / (f(xₖ) − f(xₖ₋₁))
+    </div>
+    <p style="margin-top:8px; color: var(--text-muted); font-size:0.88rem;">For the first step: x₂ = (x₀·f₁ − x₁·f₀) / (f₁ − f₀)</p>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Choose x₀, x₁ such that f(x₀) · f(x₁) &lt; 0</li>
+      <li>Compute x₂ = (x₀·f₁ − x₁·f₀) / (f₁ − f₀)</li>
+      <li>If f(x₀) · f(x₂) &lt; 0: root in (x₀, x₂). Keep x₀ fixed, replace x₁ with x₂</li>
+      <li>Else: root in (x₂, x₁). Keep x₁ fixed, replace x₀ with x₂</li>
+      <li>Repeat until |xₖ₊₁ − xₖ| ≤ ε</li>
+    </ol>
+
+    <div class="warn-box">
+      <strong>Important:</strong> In the method of false position, one endpoint remains fixed throughout all iterations. The fixed endpoint is whichever one maintains the sign change with the new approximation.
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Full Example — From Lecture Notes: x³ − 3x + 1 = 0, root in (0,1), 3 Decimal Places</div>
+      <p>x₀ = 0, x₁ = 1, f₀ = f(0) = 1, f₁ = f(1) = −1</p>
+      <table class="nice" style="margin-top:12px; font-size:0.82rem;">
+        <tr><th>k</th><th>xₖ</th><th>f(xₖ)</th><th>Fixed endpoint</th></tr>
+        <tr><td>2</td><td>0.5</td><td>−0.375</td><td>x₀ = 0 (fixed, root in (0, 0.5))</td></tr>
+        <tr><td>3</td><td>0.36364</td><td>−0.04283</td><td>x₀ = 0 (fixed)</td></tr>
+        <tr><td>4</td><td>0.34870</td><td>−0.00370</td><td>x₀ = 0 (fixed)</td></tr>
+        <tr><td>5</td><td>0.34741</td><td>−0.00030</td><td>x₀ = 0 (fixed)</td></tr>
+        <tr><td>6</td><td><strong>0.347306</strong></td><td>—</td><td><span class="green">|x₆ − x₅| = 0.000104 &lt; 0.0005 ✓</span></td></tr>
+      </table>
+      <p style="margin-top:10px;"><strong class="green">Root ≈ 0.347</strong></p>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div>
+        <h3 class="sub-title">Advantages</h3>
+        <ul class="checklist">
+          <li>Guaranteed to converge</li>
+          <li>Faster than bisection method</li>
+          <li>No derivative required</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="sub-title">Disadvantages</h3>
+        <ul class="xlist">
+          <li>One endpoint remains fixed (slow near that end)</li>
+          <li>Still requires a bracketing interval</li>
+          <li>Slower than Newton-Raphson</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWTON-RAPHSON -->
+  <div class="card" style="border-color: var(--accent3);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent3); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Method 3</span>
+      &nbsp;Newton-Raphson Method (Tangent Method)
+    </div>
+    <p><strong>Principle:</strong> The tangent line to the curve y = f(x) at the current approximation is drawn. The x-intercept of the tangent is taken as the next approximation. Also derived via Taylor series expansion.</p>
+
+    <div class="formula-box" style="border-color: var(--accent3); background: #0a1e10;">
+      <div class="formula-label">⭐ Core Iteration Formula</div>
+      xₖ₊₁ = xₖ − f(xₖ) / f'(xₖ) &nbsp;&nbsp;[f'(xₖ) ≠ 0]
+    </div>
+
+    <h3 class="sub-title">Taylor Series Derivation (from Lecture Notes)</h3>
+    <ol class="step-box">
+      <li>Let xₖ + Δx be the exact root, so f(xₖ + Δx) = 0</li>
+      <li>Expand via Taylor series: f(xₖ) + Δx·f'(xₖ) + (Δx)²/2!·f''(xₖ) + ... = 0</li>
+      <li>Neglect second and higher powers of Δx: f(xₖ) + Δx·f'(xₖ) ≈ 0</li>
+      <li>Solve: Δx = −f(xₖ)/f'(xₖ)</li>
+      <li>Therefore: xₖ₊₁ = xₖ + Δx = xₖ − f(xₖ)/f'(xₖ)</li>
+    </ol>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Choose initial approximation x₀ near the root</li>
+      <li>Compute f(xₖ) and f'(xₖ)</li>
+      <li>Apply: xₖ₊₁ = xₖ − f(xₖ) / f'(xₖ)</li>
+      <li>Repeat until |xₖ₊₁ − xₖ| ≤ ε</li>
+    </ol>
+
+    <div class="example-box">
+      <div class="ex-title">Full Example — From Lecture Notes: f(x) = x³ − 5x + 1 = 0, x₀ = 0.5, 4 Iterations</div>
+      <p>f'(x) = 3x² − 5 &nbsp;→&nbsp; Simplified: xₖ₊₁ = (2xₖ³ − 1) / (3xₖ² − 5)</p>
+      <table class="nice" style="margin-top:12px; font-size:0.82rem;">
+        <tr><th>k</th><th>xₖ</th><th>f(xₖ)</th><th>f'(xₖ)</th><th>xₖ₊₁</th></tr>
+        <tr><td>0</td><td>0.5</td><td>−1.375</td><td>−4.25</td><td>0.176471</td></tr>
+        <tr><td>1</td><td>0.176471</td><td>≈0.124</td><td>≈−4.907</td><td>0.201568</td></tr>
+        <tr><td>2</td><td>0.201568</td><td>≈0.001</td><td>≈−4.878</td><td>0.201640</td></tr>
+        <tr><td>3</td><td>0.201640</td><td>≈0</td><td>—</td><td><strong class="green">0.201640</strong></td></tr>
+      </table>
+      <p style="margin-top:10px;"><strong class="green">Root ≈ 0.201640</strong> (converges to 6 decimal places in 4 iterations)</p>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Example 2 — Cube Root: ∛17, N = 17, x₀ = 2 (From Lecture Notes)</div>
+      <p>f(x) = x³ − 17 &nbsp;→&nbsp; f'(x) = 3x² &nbsp;→&nbsp; Formula: xₖ₊₁ = (2xₖ³ + 17) / (3xₖ²)</p>
+      <table class="nice" style="margin-top:8px; font-size:0.82rem;">
+        <tr><th>k</th><th>xₖ</th><th>xₖ₊₁</th></tr>
+        <tr><td>0</td><td>2.000000</td><td>2.750000</td></tr>
+        <tr><td>1</td><td>2.750000</td><td>2.582645</td></tr>
+        <tr><td>2</td><td>2.582645</td><td>2.571332</td></tr>
+        <tr><td>3</td><td>2.571332</td><td>2.571282</td></tr>
+      </table>
+      <p style="margin-top:8px;"><strong class="green">∛17 ≈ 2.5713</strong> &nbsp;|&nbsp; |x₄ − x₃| = 0.00005 &lt; 0.00005 ✓</p>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div>
+        <h3 class="sub-title">Advantages</h3>
+        <ul class="checklist">
+          <li>Fastest convergence (quadratic order)</li>
+          <li>Only one starting point required</li>
+          <li>Highly accurate in few iterations</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="sub-title">Disadvantages</h3>
+        <ul class="xlist">
+          <li>Requires computation of f'(x)</li>
+          <li>May diverge if x₀ is far from root</li>
+          <li>Fails if f'(xₖ) = 0 at any iteration</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECANT -->
+  <div class="card" style="border-color: var(--accent4);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent4); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">Method 4</span>
+      &nbsp;Secant Method
+    </div>
+    <p><strong>Principle:</strong> A secant line is drawn through two most recent approximations. Unlike False Position, no condition f(x₀)·f(x₁) &lt; 0 is required, and both endpoints are updated at each iteration.</p>
+
+    <div class="formula-box">
+      <div class="formula-label">General Iteration Formula</div>
+      xₖ₊₁ = xₖ − f(xₖ) · (xₖ − xₖ₋₁) / (f(xₖ) − f(xₖ₋₁))
+    </div>
+
+    <h3 class="sub-title">Algorithm</h3>
+    <ol class="step-box">
+      <li>Choose two initial approximations x₀ and x₁</li>
+      <li>Compute f(x₀) and f(x₁)</li>
+      <li>Apply formula to obtain x₂</li>
+      <li>Use x₁ and x₂ to compute x₃, and so on (always use the two most recent values)</li>
+      <li>Stop when |xₖ₊₁ − xₖ| ≤ ε</li>
+    </ol>
+
+    <div class="example-box">
+      <div class="ex-title">Full Example — From Lecture Notes: cos(x) = xe^x, to 4 Decimal Places</div>
+      <p>f(x) = cos(x) − xe^x = 0, x₀ = 0, x₁ = 1</p>
+      <p>f(x₀) = 1, f(x₁) = cos(1) − e ≈ −2.17798</p>
+      <table class="nice" style="margin-top:12px; font-size:0.82rem;">
+        <tr><th>k</th><th>xₖ</th><th>f(xₖ)</th></tr>
+        <tr><td>0</td><td>0</td><td>1</td></tr>
+        <tr><td>1</td><td>1</td><td>−2.17798</td></tr>
+        <tr><td>2</td><td>0.31467</td><td>0.51987</td></tr>
+        <tr><td>3</td><td>0.44673</td><td>0.20354</td></tr>
+        <tr><td>4</td><td>0.53171</td><td>—</td></tr>
+        <tr><td>5</td><td>0.51690</td><td>—</td></tr>
+        <tr><td>6</td><td>0.51775</td><td>—</td></tr>
+        <tr><td>7</td><td><strong>0.51776</strong></td><td><span class="green">|x₇ − x₆| &lt; 0.00005 ✓</span></td></tr>
+      </table>
+      <p style="margin-top:10px;"><strong class="green">Root ≈ 0.5178</strong></p>
+    </div>
+
+    <div class="card" style="background:var(--surface2); border:1px solid var(--border); margin-top:14px;">
+      <strong class="highlight">Key Distinction: Secant Method vs. False Position Method</strong>
+      <ul class="checklist" style="margin-top:10px;">
+        <li><strong>False Position:</strong> One endpoint is held fixed throughout; only the other is updated</li>
+        <li><strong>Secant:</strong> Both endpoints update at every iteration (always the two most recent points)</li>
+        <li>Both methods use the same secant line formula — the difference lies in <em>which two points</em> are selected</li>
+      </ul>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div>
+        <h3 class="sub-title">Advantages</h3>
+        <ul class="checklist">
+          <li>No derivative required</li>
+          <li>Superlinear convergence</li>
+          <li>No bracket required</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="sub-title">Disadvantages</h3>
+        <ul class="xlist">
+          <li>Convergence is not guaranteed</li>
+          <li>Fails when f(xₙ) = f(xₙ₋₁)</li>
+          <li>Sensitive to initial guesses</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────── EXAM PRIORITY ────────────────── -->
+<div id="priority" class="section">
+  <h2 class="section-title">🎯 Exam Priority Reference</h2>
+
+  <div class="card" style="border-color: var(--accent2);">
+    <div class="card-title">📌 Formulas to Memorize</div>
+    <div class="grid-2">
+      <div class="formula-box" style="margin:4px;">
+        <div class="formula-label">Absolute Error</div>
+        Eₐ = |X − X̃|
+      </div>
+      <div class="formula-box" style="margin:4px;">
+        <div class="formula-label">Relative Error</div>
+        Eᵣ = |X − X̃| / |X|
+      </div>
+      <div class="formula-box" style="margin:4px;">
+        <div class="formula-label">Percentage Error</div>
+        Eₚ = Eᵣ × 100
+      </div>
+      <div class="formula-box" style="margin:4px;">
+        <div class="formula-label">n Decimal Places → Error</div>
+        Error ≤ ½ × 10⁻ⁿ
+      </div>
+      <div class="formula-box" style="margin:4px;">
+        <div class="formula-label">Bisection</div>
+        xₙ = (a + b) / 2
+      </div>
+      <div class="formula-box" style="margin:4px;">
+        <div class="formula-label">False Position</div>
+        xₙ₊₁ = (x₀·fₙ − xₙ·f₀) / (fₙ − f₀)
+      </div>
+      <div class="formula-box" style="margin:4px; border-color: #56d364; background: #0a2010;">
+        <div class="formula-label">⭐ Newton-Raphson</div>
+        xₖ₊₁ = xₖ − f(xₖ) / f'(xₖ)
+      </div>
+      <div class="formula-box" style="margin:4px;">
+        <div class="formula-label">Secant</div>
+        xₖ₊₁ = xₖ − f(xₖ)(xₖ − xₖ₋₁) / (f(xₖ) − f(xₖ₋₁))
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Common Examination Question Types</div>
+    <table class="nice">
+      <tr><th>#</th><th>Question Type</th><th>Required Approach</th></tr>
+      <tr><td>1</td><td>Find root of f(x) = 0 by bisection method to n decimal places</td><td>Locate bracket → iterate midpoint formula → stop at ε</td></tr>
+      <tr><td>2</td><td>Apply Newton-Raphson method to f(x) = 0</td><td>Differentiate f(x) → apply formula → simplify → iterate</td></tr>
+      <tr><td>3</td><td>Find absolute, relative, and percentage error</td><td>Eₐ → Eᵣ = Eₐ/|X| → Eₚ = Eᵣ × 100</td></tr>
+      <tr><td>4</td><td>Locate intervals containing roots of a polynomial</td><td>Construct value table, identify sign changes</td></tr>
+      <tr><td>5</td><td>Determine number of bisection iterations for accuracy ε</td><td>Apply: n ≥ ln((b−a)/ε) / ln(2)</td></tr>
+      <tr><td>6</td><td>Apply False Position method</td><td>Same bracket as bisection, use secant line formula, identify fixed endpoint</td></tr>
+      <tr><td>7</td><td>Derive Newton-Raphson formula for √N or ∛N</td><td>Define f(x) = xⁿ − N, compute f'(x), substitute in N-R formula</td></tr>
+      <tr><td>8</td><td>Apply Secant method and compare with False Position</td><td>Both endpoints update; no bracket required</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚡ Problem-Solving Guidelines</div>
+    <div class="grid-2">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="blue">Step 1: Root Location</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Before applying any method, always construct a table of f(x) values to identify the interval containing the root.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="green">Step 2: Simplify the Formula</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">For Newton-Raphson, algebraically simplify xₖ₊₁ = xₖ − f/f' into a single fraction before substituting numerical values.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="highlight">Step 3: Apply Stopping Criterion</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">Check |xₖ₊₁ − xₖ| ≤ ε at every step. Do not stop prematurely or over-iterate.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="red">Step 4: Identify Fixed Endpoint</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">In False Position only: determine which endpoint remains fixed. This is a common source of errors in examinations.</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="purple">Step 5: Deriving Root Formulas</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">For ⁿ√N: f(x) = xⁿ − N, f'(x) = nxⁿ⁻¹ → xₖ₊₁ = [(n−1)xₖⁿ + N] / [n·xₖⁿ⁻¹]</p>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="blue">Step 6: Error in Products</strong>
+        <p style="font-size:0.88rem; margin-top:6px;">For y = x₁·x₂·...·xₙ: Eᵣ_max = δx₁/x₁ + δx₂/x₂ + ... + δxₙ/xₙ</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color: var(--accent2);">
+    <div class="card-title">⚠️ Common Errors — Examination Traps</div>
+    <ul class="xlist">
+      <li>Newton-Raphson: Incorrect differentiation of f(x), especially with composite functions</li>
+      <li>Bisection: Updating the wrong endpoint (update b when f(midpoint) &gt; 0; update a when f(midpoint) &lt; 0)</li>
+      <li>False Position: Treating it like Secant — both endpoints do NOT update; only one does</li>
+      <li>Relative error: Dividing by the approximate value instead of the true value</li>
+      <li>Stopping condition: Using incorrect ε for the required number of decimal places</li>
+      <li>Secant method: The method fails and diverges if f(xₙ) = f(xₙ₋₁)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ────────────────── REVISION ────────────────── -->
+<div id="revision" class="section">
+  <h2 class="section-title">📋 Quick Revision Sheet</h2>
+
+  <div class="rev-block">
+    <h3>ERROR ESTIMATION — KEY FORMULAS</h3>
+    <div class="pills">
+      <span class="pill" style="background:#1f6feb33; color:var(--accent); border-color:#1f6feb66;">Eₐ = |X − X̃|</span>
+      <span class="pill" style="background:#e3b34122; color:var(--accent4); border-color:#e3b34155;">Eᵣ = Eₐ / |X|</span>
+      <span class="pill" style="background:#56d36422; color:var(--accent3); border-color:#56d36455;">Eₚ = Eᵣ × 100</span>
+      <span class="pill" style="background:#bc8cff22; color:var(--accent5); border-color:#bc8cff55;">n decimals → Eₐ ≤ ½×10⁻ⁿ</span>
+    </div>
+    <ul class="checklist" style="margin-top:12px;">
+      <li><strong>Inherent error</strong>: in input data before computation</li>
+      <li><strong>Rounding error</strong>: from rounding numbers (round half up)</li>
+      <li><strong>Truncation error</strong>: from cutting off an infinite process</li>
+      <li>Relative and percentage errors are <strong>independent of units</strong></li>
+      <li>For y = x₁·x₂·...·xₙ: relative error = <strong>sum of individual relative errors</strong></li>
+    </ul>
+  </div>
+
+  <div class="rev-block">
+    <h3>ROOT FINDING — PRELIMINARY STEPS</h3>
+    <ul class="checklist">
+      <li>Root exists in (a, b) when <strong>f(a) · f(b) &lt; 0</strong></li>
+      <li>Construct a table of f(x) at integer or half-integer points</li>
+      <li>Universal stopping condition: <strong>|xₖ₊₁ − xₖ| ≤ ε</strong></li>
+    </ul>
+  </div>
+
+  <div class="rev-block">
+    <h3 class="method-bisect">BISECTION METHOD</h3>
+    <p style="font-size:0.9rem;"><strong>Formula:</strong> xₙ = (a + b) / 2 &nbsp;·&nbsp; Both endpoints update &nbsp;·&nbsp; Always converges &nbsp;·&nbsp; Slow (linear)</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">f(xₙ) &lt; 0 → new a = xₙ &nbsp;|&nbsp; f(xₙ) &gt; 0 → new b = xₙ</p>
+  </div>
+
+  <div class="rev-block">
+    <h3 class="method-false">FALSE POSITION METHOD (Regula Falsi)</h3>
+    <p style="font-size:0.9rem;"><strong>Formula:</strong> xₙ₊₁ = (x₀·fₙ − xₙ·f₀) / (fₙ − f₀) &nbsp;·&nbsp; <strong>One endpoint is fixed</strong> &nbsp;·&nbsp; Always converges &nbsp;·&nbsp; Medium speed</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Identify which endpoint is fixed (the one that does not change sign with new approximation)</p>
+  </div>
+
+  <div class="rev-block" style="border-left: 3px solid var(--accent3);">
+    <h3 class="method-newton">NEWTON-RAPHSON METHOD ⭐ (Most Important)</h3>
+    <p style="font-size:0.9rem;"><strong>Formula: xₖ₊₁ = xₖ − f(xₖ) / f'(xₖ)</strong> &nbsp;·&nbsp; Requires derivative &nbsp;·&nbsp; One starting point &nbsp;·&nbsp; Quadratic convergence</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Fails when: f'(xₖ) = 0, or starting point is far from root</p>
+  </div>
+
+  <div class="rev-block">
+    <h3 class="method-secant">SECANT METHOD</h3>
+    <p style="font-size:0.9rem;"><strong>Formula:</strong> xₖ₊₁ = xₖ − f(xₖ)(xₖ − xₖ₋₁) / (f(xₖ) − f(xₖ₋₁)) &nbsp;·&nbsp; No derivative &nbsp;·&nbsp; Both points update &nbsp;·&nbsp; Not guaranteed to converge</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Fails when f(xₙ) = f(xₙ₋₁). No bracket required.</p>
+  </div>
+
+  <div class="rev-block" style="background: #0a2010;">
+    <h3 style="color:var(--accent3);">COMPLETE COMPARISON TABLE</h3>
+    <table class="nice">
+      <tr><th>Method</th><th>Formula Type</th><th>Bracket?</th><th>f'(x)?</th><th>Both pts update?</th><th>Speed</th><th>Guaranteed?</th></tr>
+      <tr><td class="method-bisect">Bisection</td><td>Midpoint</td><td>Yes ✓</td><td>No</td><td>Yes</td><td>Slow</td><td>Yes ✓</td></tr>
+      <tr><td class="method-false">False Pos.</td><td>Secant line</td><td>Yes ✓</td><td>No</td><td><strong>No (one fixed)</strong></td><td>Medium</td><td>Yes ✓</td></tr>
+      <tr><td class="method-newton">Newton-R.</td><td>Tangent line</td><td>No</td><td>Yes ✓</td><td>N/A (1 point)</td><td>Fast ⭐</td><td>Near root</td></tr>
+      <tr><td class="method-secant">Secant</td><td>Secant line</td><td>No</td><td>No</td><td>Yes (both update)</td><td>Fast</td><td>No ✗</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ────────────────── SELF TEST ────────────────── -->
+<div id="test" class="section">
+  <h2 class="section-title">✏️ Self-Assessment — 5 Questions (Easy → Hard)</h2>
+  <p style="color:var(--text-muted); margin-bottom:20px;">Attempt each question independently before revealing the solution.</p>
+
+  <!-- Q1 -->
+  <div class="question-card">
+    <div class="q-number">Question 1 · Easy · Error Estimation</div>
+    <div class="q-text">
+      The true value of a quantity is <strong>7.3846</strong> and its approximate value is <strong>7.4</strong>.<br>
+      Calculate: (a) Absolute Error &nbsp; (b) Relative Error &nbsp; (c) Percentage Error
+    </div>
+    <textarea class="answer-area" placeholder="Write your solution here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol1')">Show Solution</button>
+    <div id="sol1" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <ol style="margin-top:10px; padding-left:20px; line-height:2.2;">
+        <li>Eₐ = |7.3846 − 7.4| = |−0.0154| = <strong>0.0154</strong></li>
+        <li>Eᵣ = Eₐ / |X| = 0.0154 / 7.3846 ≈ <strong>0.002086</strong></li>
+        <li>Eₚ = Eᵣ × 100 = 0.002086 × 100 ≈ <strong>0.21%</strong></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-card">
+    <div class="q-number">Question 2 · Easy-Medium · Root Location + Bisection</div>
+    <div class="q-text">
+      For f(x) = x³ − 4x − 9 = 0:<br>
+      (a) Verify that a root lies in the interval (2, 3).<br>
+      (b) Find the first <strong>two approximations</strong> using the Bisection Method.
+    </div>
+    <textarea class="answer-area" placeholder="Write your solution here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol2')">Show Solution</button>
+    <div id="sol2" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <ol style="margin-top:10px; padding-left:20px; line-height:2.2;">
+        <li>f(2) = 8 − 8 − 9 = <strong>−9</strong> (negative)</li>
+        <li>f(3) = 27 − 12 − 9 = <strong>+6</strong> (positive)</li>
+        <li>f(2) · f(3) = (−9)(6) &lt; 0 → root exists in (2, 3) ✓</li>
+        <li><strong>x₁ = (2+3)/2 = 2.5</strong> &nbsp;|&nbsp; f(2.5) = 15.625 − 10 − 9 = −3.375 &lt; 0</li>
+        <li>Since f(2.5) &lt; 0 and f(3) &gt; 0 → root in (2.5, 3)</li>
+        <li><strong>x₂ = (2.5+3)/2 = 2.75</strong> &nbsp;|&nbsp; f(2.75) ≈ +0.797 &gt; 0</li>
+        <li>Root now in (2.5, 2.75)</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-card">
+    <div class="q-number">Question 3 · Medium · Newton-Raphson Method</div>
+    <div class="q-text">
+      Apply the Newton-Raphson method to find the root of:<br>
+      <strong>f(x) = x³ − 5x + 1 = 0</strong><br>
+      with initial approximation x₀ = 0.5. Perform <strong>3 iterations</strong>.
+    </div>
+    <textarea class="answer-area" placeholder="Write your solution here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol3')">Show Solution</button>
+    <div id="sol3" class="solution-reveal">
+      <strong class="green">Solution:</strong><br>
+      f(x) = x³ − 5x + 1 &nbsp;|&nbsp; f'(x) = 3x² − 5<br>
+      Simplified iteration: xₖ₊₁ = (2xₖ³ − 1) / (3xₖ² − 5)
+      <table class="nice" style="margin-top:12px;">
+        <tr><th>k</th><th>xₖ</th><th>f(xₖ)</th><th>f'(xₖ)</th><th>xₖ₊₁</th></tr>
+        <tr><td>0</td><td>0.5</td><td>−1.375</td><td>−4.25</td><td>0.176471</td></tr>
+        <tr><td>1</td><td>0.176471</td><td>≈0.124</td><td>≈−4.907</td><td>0.201568</td></tr>
+        <tr><td>2</td><td>0.201568</td><td>≈0.001</td><td>≈−4.878</td><td>0.201640</td></tr>
+      </table>
+      <p style="margin-top:10px;"><strong class="green">Root ≈ 0.201640</strong></p>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-card">
+    <div class="q-number">Question 4 · Medium-Hard · False Position Method</div>
+    <div class="q-text">
+      Using the False Position Method, find the root of<br>
+      <strong>f(x) = cos(x) − xe^x = 0</strong> in the interval (0, 1).<br>
+      Perform <strong>3 iterations</strong> and identify the fixed endpoint.
+    </div>
+    <textarea class="answer-area" placeholder="Write your solution here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol4')">Show Solution</button>
+    <div id="sol4" class="solution-reveal">
+      <strong class="green">Solution:</strong><br>
+      x₀ = 0, x₁ = 1 &nbsp;|&nbsp; f₀ = f(0) = 1, f₁ = f(1) = cos(1) − e ≈ −2.17798
+      <ol style="margin-top:10px; padding-left:20px; line-height:2.2;">
+        <li>x₂ = (0·(−2.17798) − 1·(1)) / (−2.17798 − 1) = −1 / −3.17798 = <strong>0.31467</strong><br>
+        f(0.31467) ≈ +0.51987 &gt; 0</li>
+        <li>f(x₂) &gt; 0, f(x₁) &lt; 0 → root in (x₂, x₁). <strong>x₁ = 1 is fixed.</strong><br>
+        x₃ = (0.31467·(−2.17798) − 1·(0.51987)) / (−2.17798 − 0.51987) = <strong>0.44673</strong><br>
+        f(0.44673) ≈ +0.20354 &gt; 0</li>
+        <li>Root in (0.44673, 1). x₁ = 1 remains fixed.<br>
+        x₄ = (0.44673·(−2.17798) − 1·(0.20354)) / (−2.17798 − 0.20354) ≈ <strong>0.49402</strong></li>
+      </ol>
+      <p style="margin-top:8px;"><strong>Fixed endpoint: x = 1 (right endpoint)</strong></p>
+      <p style="color:var(--accent3); margin-top:4px;">Converges toward ≈ <strong>0.5178</strong></p>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question-card">
+    <div class="q-number">Question 5 · Hard · Derivation + Application</div>
+    <div class="q-text">
+      (a) Derive the Newton-Raphson iteration formula for computing <strong>√N</strong>.<br>
+      (b) Apply the formula with x₀ = 2 to compute <strong>√5</strong> correct to 4 decimal places.
+    </div>
+    <textarea class="answer-area" placeholder="Write your solution here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol5')">Show Solution</button>
+    <div id="sol5" class="solution-reveal">
+      <strong class="green">Part (a) — Derivation:</strong>
+      <ol style="padding-left:20px; line-height:2.2; margin-top:8px;">
+        <li>Let x = √N → x² = N → Define f(x) = x² − N</li>
+        <li>f'(x) = 2x</li>
+        <li>Substitute into N-R formula: xₖ₊₁ = xₖ − (xₖ² − N) / (2xₖ)</li>
+        <li>Simplify: xₖ₊₁ = (2xₖ² − xₖ² + N) / (2xₖ) = <strong>(xₖ + N/xₖ) / 2</strong></li>
+      </ol>
+      <strong class="green">Part (b) — √5, N = 5, x₀ = 2:</strong>
+      <table class="nice" style="margin-top:10px;">
+        <tr><th>k</th><th>xₖ</th><th>xₖ₊₁ = (xₖ + 5/xₖ) / 2</th></tr>
+        <tr><td>0</td><td>2</td><td>(2 + 2.5)/2 = 2.25</td></tr>
+        <tr><td>1</td><td>2.25</td><td>(2.25 + 2.2222)/2 = 2.2361</td></tr>
+        <tr><td>2</td><td>2.2361</td><td>(2.2361 + 2.2360)/2 = 2.23607</td></tr>
+      </table>
+      <p style="color:var(--accent3); margin-top:10px;">|x₃ − x₂| &lt; 0.00005 → <strong>√5 ≈ 2.2361</strong> ✓</p>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────── RESOURCES ────────────────── -->
+<div id="resources" class="section">
+  <h2 class="section-title">🎥 Learning Resources</h2>
+
+  <div class="card">
+    <div class="card-title">▶️ Recommended YouTube Search Terms</div>
+    <table class="nice">
+      <tr><th>Topic</th><th>Search Term</th><th>Notes</th></tr>
+      <tr>
+        <td>Absolute, Relative & Percentage Error</td>
+        <td><a href="https://www.youtube.com/results?search_query=absolute+relative+percentage+error+numerical+analysis" target="_blank" style="color:var(--accent);">absolute relative percentage error numerical analysis</a></td>
+        <td>Select videos under 8 minutes with worked examples</td>
+      </tr>
+      <tr>
+        <td>Bisection Method</td>
+        <td><a href="https://www.youtube.com/results?search_query=bisection+method+numerical+analysis+example" target="_blank" style="color:var(--accent);">bisection method numerical analysis example</a></td>
+        <td>Prefer videos showing full iteration tables</td>
+      </tr>
+      <tr>
+        <td>Newton-Raphson Method</td>
+        <td><a href="https://www.youtube.com/results?search_query=newton+raphson+method+step+by+step" target="_blank" style="color:var(--accent);">newton raphson method step by step</a></td>
+        <td>Look for derivation + application in same video</td>
+      </tr>
+      <tr>
+        <td>False Position / Regula Falsi</td>
+        <td><a href="https://www.youtube.com/results?search_query=regula+falsi+false+position+method+numerical+analysis" target="_blank" style="color:var(--accent);">regula falsi false position numerical analysis</a></td>
+        <td>Note the fixed endpoint behavior</td>
+      </tr>
+      <tr>
+        <td>Secant Method</td>
+        <td><a href="https://www.youtube.com/results?search_query=secant+method+numerical+analysis+example" target="_blank" style="color:var(--accent);">secant method numerical analysis example</a></td>
+        <td>Compare against False Position</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛠️ Useful Online Tools</div>
+    <ul class="checklist">
+      <li><a href="https://www.wolframalpha.com" target="_blank" style="color:var(--accent);">Wolfram Alpha</a> — verify root computations and derivatives</li>
+      <li><a href="https://www.desmos.com/calculator" target="_blank" style="color:var(--accent);">Desmos Graphing Calculator</a> — visualize f(x) and locate roots graphically</li>
+      <li><a href="https://www.khanacademy.org" target="_blank" style="color:var(--accent);">Khan Academy</a> — foundational calculus concepts (derivatives, Taylor series)</li>
+      <li><a href="https://mathispower4u.com" target="_blank" style="color:var(--accent);">Mathispower4u</a> — short worked-example videos on numerical methods</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📱 Social Media Search Terms</div>
+    <div class="grid-2">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong>TikTok / YouTube Shorts:</strong>
+        <ul style="margin-top:8px; padding-left:16px; font-size:0.88rem; line-height:2;">
+          <li>#NewtonRaphsonMethod</li>
+          <li>#NumericalMethods</li>
+          <li>#BisectionMethod</li>
+          <li>#NumericalAnalysis</li>
+        </ul>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong>Search Phrases:</strong>
+        <ul style="margin-top:8px; padding-left:16px; font-size:0.88rem; line-height:2;">
+          <li>"numerical methods root finding"</li>
+          <li>"error estimation numerical analysis"</li>
+          <li>"bisection method 5 minutes"</li>
+          <li>"Newton Raphson derivation"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<!-- ── Footer ── -->
+<div class="footer">
+  <strong>Made by Latera</strong> &nbsp;·&nbsp; Second Year Computer Science Students &nbsp;·&nbsp; Ambo University<br>
+  <span style="margin-top:6px; display:block;">Based on: Numerical Analysis Lecture Notes · Tadesse Nigisa · Dept. of Mathematics · April 2019</span>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+function reveal(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+  const btn = el.previousElementSibling;
+  btn.textContent = el.classList.contains('show') ? 'Hide Solution' : 'Show Solution';
+}
+</script>
+</body>
+</html>

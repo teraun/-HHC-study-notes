@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Logic Design — Crash Course</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1f2937;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #f78166;
+    --accent3: #56d364;
+    --accent4: #e3b341;
+    --accent5: #bc8cff;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --formula-bg: #0d2137;
+    --formula-border: #1f6feb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a2332 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  }
+  .hero-left h1 { font-size: 1.5rem; color: var(--accent); }
+  .hero-left p { color: var(--text-muted); font-size: 0.88rem; margin-top: 5px; }
+  .made-by { background: var(--surface2); border: 1px solid var(--accent5); border-radius: 10px; padding: 10px 20px; text-align: center; }
+  .made-by .mb-name { font-size: 1.1rem; font-weight: 700; color: var(--accent5); }
+  .made-by .mb-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+
+  .tabs { display: flex; overflow-x: auto; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; gap: 4px; }
+  .tab { padding: 12px 18px; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; border-bottom: 2px solid transparent; white-space: nowrap; transition: all .2s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 18px; }
+  .card-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; letter-spacing: .5px; }
+  .badge-blue   { background: #1f6feb33; color: var(--accent);  border: 1px solid #1f6feb66; }
+  .badge-red    { background: #f7816622; color: var(--accent2); border: 1px solid #f7816655; }
+  .badge-green  { background: #56d36422; color: var(--accent3); border: 1px solid #56d36455; }
+  .badge-yellow { background: #e3b34122; color: var(--accent4); border: 1px solid #e3b34155; }
+  .badge-purple { background: #bc8cff22; color: var(--accent5); border: 1px solid #bc8cff55; }
+
+  .formula-box {
+    background: var(--formula-bg); border: 1px solid var(--formula-border); border-radius: 8px;
+    padding: 14px 18px; font-family: 'Consolas', monospace; font-size: 0.95rem;
+    color: #79c0ff; margin: 10px 0; white-space: pre; line-height: 1.8; overflow-x: auto;
+  }
+  .formula-box .formula-label { font-size: 0.72rem; color: var(--text-muted); font-family: 'Segoe UI', sans-serif; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+  ul.checklist { list-style: none; padding: 0; }
+  ul.checklist li { padding: 5px 0; padding-left: 24px; position: relative; }
+  ul.checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--accent3); font-weight: 700; }
+  ul.xlist { list-style: none; padding: 0; }
+  ul.xlist li { padding: 5px 0; padding-left: 24px; position: relative; }
+  ul.xlist li::before { content: "✗"; position: absolute; left: 0; color: var(--accent2); font-weight: 700; }
+
+  .step-box { counter-reset: step; padding-left: 0; list-style: none; }
+  .step-box li { counter-increment: step; padding: 8px 0 8px 20px; position: relative; border-left: 2px solid var(--border); margin-left: 16px; }
+  .step-box li::before { content: counter(step); position: absolute; left: -14px; background: var(--accent); color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width:700px){ .grid-2,.grid-3{grid-template-columns:1fr;} }
+
+  .highlight { color: var(--accent4); font-weight: 600; }
+  .red    { color: var(--accent2); }
+  .green  { color: var(--accent3); }
+  .blue   { color: var(--accent); }
+  .purple { color: var(--accent5); }
+
+  table.nice { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 10px; }
+  table.nice th { background: var(--surface2); color: var(--accent); padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--formula-border); }
+  table.nice td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.nice tr:hover td { background: #ffffff08; }
+  .td-1 { color: var(--accent3); font-weight: 700; }
+  .td-0 { color: var(--text-muted); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .note-box { background: #111827; border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; font-size: 0.9rem; color: var(--text-muted); }
+  .warn-box { background: #1c1208; border-left: 3px solid var(--accent4); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; font-size: 0.9rem; color: var(--accent4); }
+  .danger-box { background: #1c0808; border-left: 3px solid var(--accent2); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; font-size: 0.9rem; color: var(--accent2); }
+
+  .example-box { background: #0a1628; border: 1px solid #1f4068; border-radius: 10px; padding: 18px; margin: 14px 0; }
+  .example-box .ex-title { color: var(--accent3); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .pill { padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; border: 1px solid; cursor: default; }
+
+  .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+  .q-number { color: var(--accent5); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+  .q-text { font-size: 1rem; margin-bottom: 14px; line-height: 1.6; }
+  .answer-area { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 12px; font-size: 0.9rem; min-height: 80px; resize: vertical; font-family: inherit; }
+  .answer-area:focus { outline: none; border-color: var(--accent); }
+  .reveal-btn { margin-top: 10px; background: var(--surface2); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; transition: all .2s; }
+  .reveal-btn:hover { background: var(--accent); color: #000; }
+  .solution-reveal { display: none; background: #0a1628; border: 1px solid #1f4068; border-radius: 8px; padding: 16px; margin-top: 12px; animation: fadeIn .3s ease; }
+  .solution-reveal.show { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+  .rev-block { background: var(--surface2); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .rev-block h3 { color: var(--accent4); font-size: 0.9rem; margin-bottom: 8px; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  code { background: #1c2a3a; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.9em; color: #79c0ff; }
+  p { line-height: 1.65; }
+  h2.section-title { font-size: 1.3rem; margin-bottom: 22px; color: var(--text); }
+  h3.sub-title { font-size: 1rem; font-weight: 600; margin: 16px 0 10px; color: var(--accent); }
+  small { color: var(--text-muted); font-size: 0.82rem; }
+
+  .footer { text-align: center; padding: 28px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; margin-top: 40px; }
+  .footer strong { color: var(--accent5); }
+
+  .truth-1 { color: var(--accent3); font-weight: 700; }
+  .truth-0 { color: var(--text-muted); }
+  .invalid { color: var(--accent2); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-left">
+    <h1>⚡ Digital Logic Design — Crash Course</h1>
+    <p>Unit 1: Boolean Algebra &nbsp;·&nbsp; Unit 2: Number Systems &nbsp;·&nbsp; Unit 3: Digital Components</p>
+    <p style="margin-top:4px;">Ambo University &nbsp;·&nbsp; Department of Computer Science &nbsp;·&nbsp; 2nd Year</p>
+  </div>
+  <div class="made-by">
+    <div class="mb-name">Made by Tera</div>
+    <div class="mb-sub">HHC Developers Club</div>
+    <div class="mb-sub" style="margin-top:4px; color:var(--accent4);">Ambo University · 2nd Year CS</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview',this)">📖 Overview</div>
+  <div class="tab" onclick="switchTab('unit1',this)">🔵 Unit 1: Boolean Algebra</div>
+  <div class="tab" onclick="switchTab('unit2',this)">🟢 Unit 2: Number Systems</div>
+  <div class="tab" onclick="switchTab('unit3',this)">🟣 Unit 3: Components</div>
+  <div class="tab" onclick="switchTab('revision',this)">📋 Quick Revision</div>
+  <div class="tab" onclick="switchTab('test',this)">✏️ Self-Test</div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════ OVERVIEW ═══════════ -->
+<div id="overview" class="section active">
+  <h2 class="section-title">📖 Course Overview</h2>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-blue">UNIT 1</span> Boolean Algebra</div>
+      <p>The mathematical foundation of all digital circuits. Uses 0 and 1, and three basic operations: AND, OR, NOT.</p>
+      <div class="note-box" style="margin-top:10px;">Boolean simplification = fewer gates = simpler, cheaper circuits.</div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>AND, OR, NOT, NAND, NOR, XOR</li>
+        <li>Laws including De Morgan's</li>
+        <li>Step-by-step simplification</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">UNIT 2</span> Number Systems</div>
+      <p>Computers use binary (0,1). We need to convert between decimal, binary, and hexadecimal.</p>
+      <div class="note-box" style="margin-top:10px;">Decimal→Binary: divide by 2, read remainders bottom-up. Binary→Decimal: multiply by powers of 2.</div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>Binary, Decimal, Hex conversions</li>
+        <li>Binary addition with carry</li>
+        <li>Signed/Unsigned integers</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">UNIT 3</span> Digital Components</div>
+      <p>Real hardware built from gates: decoders, multiplexers, demultiplexers, and registers.</p>
+      <div class="note-box" style="margin-top:10px;">MUX = many inputs → 1 output. Decoder = 1 binary address → 1 active output.</div>
+      <ul class="checklist" style="margin-top:10px;">
+        <li>ICs (SSI, MSI, LSI, VLSI)</li>
+        <li>Decoder, MUX, DEMUX</li>
+        <li>Registers + Flip-Flops</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⭐ TOP 10 MOST IMPORTANT EXAM CONCEPTS</div>
+    <table class="nice">
+      <tr><th>#</th><th>Topic</th><th>Exam Weight</th><th>Priority</th></tr>
+      <tr><td>1</td><td>AND / OR / NOT truth tables — know them cold</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>2</td><td>De Morgan's Laws — (AB)̄=Ā+B̄ and (A+B)̄=Ā·B̄</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>3</td><td>Boolean simplification — step-by-step using laws</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>4</td><td>Binary → Decimal — multiply by powers of 2, add</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>5</td><td>Decimal → Binary — divide by 2, remainders bottom-up</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>6</td><td>Binary addition — carry rules: 1+1=0 carry 1</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>7</td><td>2-to-4 Decoder — truth table + output Boolean expressions</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>8</td><td>4-to-1 MUX — Boolean expression + which input is selected</td><td>⭐⭐⭐⭐⭐</td><td><span class="badge badge-red">HIGH</span></td></tr>
+      <tr><td>9</td><td>Decoder vs MUX vs DEMUX differences</td><td>⭐⭐⭐⭐</td><td><span class="badge badge-yellow">MEDIUM</span></td></tr>
+      <tr><td>10</td><td>Flip-flop types (SR, D, JK) + SR invalid state S=R=1</td><td>⭐⭐⭐</td><td><span class="badge badge-yellow">MEDIUM</span></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚡ Quick Reference — All Truth Tables</div>
+    <div class="grid-3">
+      <div>
+        <h3 class="sub-title">AND · OR · NOT</h3>
+        <table class="nice">
+          <tr><th>A</th><th>B</th><th>AND</th><th>OR</th></tr>
+          <tr><td>0</td><td>0</td><td class="truth-0">0</td><td class="truth-0">0</td></tr>
+          <tr><td>0</td><td>1</td><td class="truth-0">0</td><td class="truth-1">1</td></tr>
+          <tr><td>1</td><td>0</td><td class="truth-0">0</td><td class="truth-1">1</td></tr>
+          <tr><td>1</td><td>1</td><td class="truth-1">1</td><td class="truth-1">1</td></tr>
+        </table>
+        <p style="margin-top:8px; font-size:0.85rem;">NOT: 0→<span class="truth-1">1</span>, 1→<span class="truth-0">0</span></p>
+      </div>
+      <div>
+        <h3 class="sub-title">NAND · NOR</h3>
+        <table class="nice">
+          <tr><th>A</th><th>B</th><th>NAND</th><th>NOR</th></tr>
+          <tr><td>0</td><td>0</td><td class="truth-1">1</td><td class="truth-1">1</td></tr>
+          <tr><td>0</td><td>1</td><td class="truth-1">1</td><td class="truth-0">0</td></tr>
+          <tr><td>1</td><td>0</td><td class="truth-1">1</td><td class="truth-0">0</td></tr>
+          <tr><td>1</td><td>1</td><td class="truth-0">0</td><td class="truth-0">0</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 class="sub-title">XOR</h3>
+        <table class="nice">
+          <tr><th>A</th><th>B</th><th>XOR</th></tr>
+          <tr><td>0</td><td>0</td><td class="truth-0">0</td></tr>
+          <tr><td>0</td><td>1</td><td class="truth-1">1</td></tr>
+          <tr><td>1</td><td>0</td><td class="truth-1">1</td></tr>
+          <tr><td>1</td><td>1</td><td class="truth-0">0</td></tr>
+        </table>
+        <p style="margin-top:8px; font-size:0.85rem; color:var(--text-muted);">Different inputs → 1<br>Same inputs → 0</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ UNIT 1 ═══════════ -->
+<div id="unit1" class="section">
+  <h2 class="section-title">🔵 Unit 1: Boolean Algebra</h2>
+
+  <!-- AND OR NOT -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">TOPIC 1</span> AND, OR, NOT Operations ⚠️</div>
+    <p>Boolean algebra uses only <strong>0 (FALSE)</strong> and <strong>1 (TRUE)</strong>. Three operations control everything.</p>
+    <div class="note-box">Analogy: 0 = switch OFF, 1 = switch ON. AND = both switches must be ON. OR = either switch turns it ON. NOT = flips the switch.</div>
+
+    <div class="grid-3" style="margin-top:14px;">
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent);">
+        <strong class="blue">AND (A·B)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">ALL inputs must be 1 to get 1.<br>Any 0 input → output = 0.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">A B | A·B
+0 0 |  0
+0 1 |  0
+1 0 |  0
+1 1 |  1 ←only here</div>
+      </div>
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent3);">
+        <strong class="green">OR (A+B)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">ANY 1 input gives output 1.<br>Only 0 when both are 0.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">A B | A+B
+0 0 |  0 ←only here
+0 1 |  1
+1 0 |  1
+1 1 |  1</div>
+      </div>
+      <div style="padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent4);">
+        <strong class="highlight">NOT (Ā)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Always flips the value.<br>0 becomes 1, 1 becomes 0.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">A | Ā
+0 | 1
+1 | 0</div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">NAND, NOR, XOR</h3>
+    <div class="grid-3">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="red">NAND = NOT AND</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Opposite of AND. Only 0 when both inputs = 1.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">0,0→1  0,1→1
+1,0→1  1,1→0</div>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="purple">NOR = NOT OR</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Opposite of OR. Only 1 when both inputs = 0.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">0,0→1  0,1→0
+1,0→0  1,1→0</div>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="highlight">XOR (A⊕B)</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">DIFFERENT inputs → 1. SAME inputs → 0.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">0,0→0  0,1→1
+1,0→1  1,1→0</div>
+      </div>
+    </div>
+
+    <div class="warn-box" style="margin-top:12px;">NAND alone OR NOR alone can implement ANY Boolean function — they are functionally complete sets.</div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> A=1, B=0. Find A·B, A+B, Ā, A NAND B<br>
+      <span class="green">Answer: A·B=0 | A+B=1 | Ā=0 | NAND=NOT(0)=1</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> A=1, B=1. Find A NOR B and A XOR B<br>
+      <span class="green">Answer: NOR=NOT(1+1)=NOT(1)=0 | XOR=same inputs→0</span></p>
+    </div>
+  </div>
+
+  <!-- Laws -->
+  <div class="card" style="border-color:var(--accent4);">
+    <div class="card-title"><span class="badge badge-yellow">TOPIC 2</span> Laws of Boolean Algebra ⚠️</div>
+    <p>Rules that always hold true. Use them to simplify expressions — simpler expression = fewer gates.</p>
+
+    <div class="grid-2" style="margin-top:12px;">
+      <div>
+        <div class="formula-box">IDENTITY:
+  A + 0 = A      A · 1 = A
+
+NULL:
+  A + 1 = 1      A · 0 = 0
+
+IDEMPOTENT:
+  A + A = A      A · A = A
+
+COMPLEMENT:
+  A + Ā = 1     A · Ā = 0
+
+DOUBLE NOT:
+  Ā̄ = A</div>
+      </div>
+      <div>
+        <div class="formula-box">COMMUTATIVE:
+  A+B = B+A      A·B = B·A
+
+DISTRIBUTIVE:
+  A·(B+C) = A·B + A·C
+  A+(B·C) = (A+B)·(A+C)
+
+ABSORPTION:
+  A + A·B = A
+  A · (A+B) = A
+
+ASSOCIATIVE:
+  (A+B)+C = A+(B+C)</div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">De Morgan's Laws ⚠️⚠️ — MOST CRITICAL</h3>
+    <div class="formula-box" style="border-color:#e3b341; background:#1a1208; color:#e3b341; font-size:1.05rem;">
+(A · B)̄  =  Ā + B̄      flip · to +,  complement EACH variable
+(A + B)̄  =  Ā · B̄      flip + to ·,  complement EACH variable
+
+Rule in 4 words:  FLIP THE OPERATOR, COMPLEMENT EACH</div>
+
+    <div class="note-box">Analogy: "The door is NOT (locked AND closed)" = "The door is NOT locked OR NOT closed" — that's De Morgan's in plain English.</div>
+
+    <div class="danger-box" style="margin-top:10px;">
+      ✗ WRONG: (A+B)̄ = Ā+B̄ — you kept the operator, only complemented variables<br>
+      ✓ RIGHT: (A+B)̄ = Ā·B̄ — flip + to ·, THEN complement each variable
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Apply De Morgan's to (A·B·C)̄<br>
+      <span class="green">Answer: Ā + B̄ + C̄ (flip · to +, complement each)</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Apply De Morgan's to (A+B)̄<br>
+      <span class="green">Answer: Ā · B̄ (flip + to ·, complement each)</span></p>
+      <hr class="divider">
+      <p><strong>Q3.</strong> Simplify using laws: A·0 + B·1<br>
+      <span class="green">Answer: 0 + B = B (null law + identity law)</span></p>
+    </div>
+  </div>
+
+  <!-- Simplification -->
+  <div class="card" style="border-color:var(--accent3);">
+    <div class="card-title"><span class="badge badge-green">TOPIC 3</span> Simplification of Boolean Expressions ⚠️⚠️</div>
+    <p>Apply laws step-by-step to reduce complex expressions. Every eliminated term = one fewer gate.</p>
+
+    <h3 class="sub-title">Step-by-step method:</h3>
+    <ol class="step-box">
+      <li>Factor common variables (distributive law)</li>
+      <li>Look for complement pairs → A+Ā=1 or A·Ā=0</li>
+      <li>Apply null/identity to eliminate 0s and 1s</li>
+      <li>Use absorption: A+AB=A</li>
+      <li>Apply De Morgan's to simplify complex NOTs</li>
+    </ol>
+
+    <div class="example-box" style="margin-top:16px;">
+      <div class="ex-title">Worked Example 1 — Simplify: A·B + A·B̄</div>
+      <div class="formula-box">= A·(B + B̄)     ← distributive (factor out A)
+= A · 1          ← complement law (B+B̄=1)
+= A              ← identity law (A·1=A)</div>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 2 — Simplify: A·B + Ā·B</div>
+      <div class="formula-box">= B·(A + Ā)     ← factor out B
+= B · 1          ← complement (A+Ā=1)
+= B</div>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example 3 — Simplify: A·B + A·B̄ + Ā·B</div>
+      <div class="formula-box">= A·(B+B̄) + Ā·B    ← factor
+= A·1 + Ā·B         ← complement
+= A + Ā·B
+= (A+Ā)·(A+B)        ← distributive
+= 1·(A+B)            ← complement
+= A + B</div>
+    </div>
+
+    <div class="danger-box">
+      ✗ A+A = 2A — WRONG! Boolean is NOT regular math.<br>
+      ✓ A+A = A (idempotent law)<br>
+      ✗ Forgetting to complement ALL variables in De Morgan's
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Simplify: A·B·C + A·B·C̄<br>
+      <span class="green">= A·B·(C+C̄) = A·B·1 = A·B</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Simplify: (A+B)·Ā<br>
+      <span class="green">= A·Ā + B·Ā = 0 + Ā·B = Ā·B</span></p>
+      <hr class="divider">
+      <p><strong>Q3.</strong> Simplify: A + A·B<br>
+      <span class="green">= A (absorption law: A+AB=A)</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ UNIT 2 ═══════════ -->
+<div id="unit2" class="section">
+  <h2 class="section-title">🟢 Unit 2: Number Systems and Codes</h2>
+
+  <div class="card">
+    <div class="card-title"><span class="badge badge-green">OVERVIEW</span> Number Systems</div>
+    <table class="nice">
+      <tr><th>System</th><th>Base</th><th>Digits</th><th>Used For</th></tr>
+      <tr><td class="blue"><strong>Decimal</strong></td><td>10</td><td>0–9</td><td>Human everyday use</td></tr>
+      <tr><td class="green"><strong>Binary</strong></td><td>2</td><td>0, 1</td><td>Inside computers</td></tr>
+      <tr><td class="highlight"><strong>Octal</strong></td><td>8</td><td>0–7</td><td>Binary shorthand (groups of 3)</td></tr>
+      <tr><td class="purple"><strong>Hexadecimal</strong></td><td>16</td><td>0–9, A–F</td><td>Binary shorthand (groups of 4)</td></tr>
+    </table>
+    <div class="formula-box" style="margin-top:12px;">Hex digits:  A=10  B=11  C=12  D=13  E=14  F=15
+
+Powers of 2 (MEMORIZE):
+2⁰=1   2¹=2   2²=4   2³=8   2⁴=16   2⁵=32   2⁶=64   2⁷=128</div>
+  </div>
+
+  <!-- Binary to Decimal -->
+  <div class="card" style="border-color:var(--accent3);">
+    <div class="card-title"><span class="badge badge-green">TOPIC 4</span> Binary → Decimal Conversion ⚠️⚠️</div>
+    <p>Multiply each bit by <strong>2 raised to its position</strong>, then add everything up. Rightmost bit = position 0.</p>
+    <div class="note-box">Just like decimal 345 = 3×100 + 4×10 + 5×1, binary uses powers of 2 instead of powers of 10.</div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example — Convert 11001₂ to decimal</div>
+      <div class="formula-box">Position:  4    3    2    1    0
+Bits:      1    1    0    0    1
+
+= 1×2⁴ + 1×2³ + 0×2² + 0×2¹ + 1×2⁰
+=  16  +   8  +   0  +   0  +   1
+= 25₁₀  ✓</div>
+    </div>
+
+    <div class="danger-box">✗ Starting powers from the LEFT at 0 — WRONG<br>✓ RIGHTMOST bit = position 0 (2⁰=1). Always count from the right.</div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Convert 1010₂ to decimal<br>
+      <span class="green">= 1×8 + 0×4 + 1×2 + 0×1 = 8+0+2+0 = 10₁₀</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Convert 110111₂ to decimal<br>
+      <span class="green">= 32+16+0+4+2+1 = 55₁₀</span></p>
+      <hr class="divider">
+      <p><strong>Q3.</strong> What is 10000₂ in decimal?<br>
+      <span class="green">= 1×2⁴ = 16₁₀</span></p>
+    </div>
+  </div>
+
+  <!-- Decimal to Binary -->
+  <div class="card" style="border-color:var(--accent);">
+    <div class="card-title"><span class="badge badge-blue">TOPIC 5</span> Decimal → Binary Conversion ⚠️⚠️</div>
+    <p>Divide by 2 repeatedly. The remainders, read <strong>bottom to top</strong>, give the binary number.</p>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example — Convert 47 to binary</div>
+      <div class="formula-box">47 ÷ 2 = 23  remainder 1   ← LSB (rightmost)
+23 ÷ 2 = 11  remainder 1
+11 ÷ 2 =  5  remainder 1
+ 5 ÷ 2 =  2  remainder 1
+ 2 ÷ 2 =  1  remainder 0
+ 1 ÷ 2 =  0  remainder 1   ← MSB (leftmost)
+
+Read BOTTOM TO TOP:  101111₂
+Verify: 32+8+4+2+1 = 47 ✓</div>
+    </div>
+
+    <div class="danger-box">✗ Reading remainders TOP to BOTTOM — gives the WRONG answer<br>✓ ALWAYS read remainders BOTTOM TO TOP<br>✓ Keep dividing until quotient = 0</div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Convert 25 to binary<br>
+      <span class="green">25→12r1, 12→6r0, 6→3r0, 3→1r1, 1→0r1 → 11001₂ (=16+8+1=25✓)</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Convert 13 to binary<br>
+      <span class="green">13→6r1, 6→3r0, 3→1r1, 1→0r1 → 1101₂ (=8+4+1=13✓)</span></p>
+      <hr class="divider">
+      <p><strong>Q3.</strong> Convert 53 to binary<br>
+      <span class="green">53→26r1, 26→13r0, 13→6r1, 6→3r0, 3→1r1, 1→0r1 → 110101₂</span></p>
+    </div>
+  </div>
+
+  <!-- Hex Conversion -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-purple">TOPIC 6</span> Binary ↔ Hexadecimal ⚠️</div>
+    <div class="grid-2">
+      <div>
+        <h3 class="sub-title">Binary → Hex</h3>
+        <p>Group bits in <strong>4 from the right</strong>. Convert each group to its hex digit.</p>
+        <div class="example-box">
+          <div class="ex-title">Example</div>
+          <div class="formula-box">10111100₂
+
+1011  1100
+  B     C
+= BC₁₆</div>
+        </div>
+      </div>
+      <div>
+        <h3 class="sub-title">Hex → Binary</h3>
+        <p>Expand each hex digit into <strong>exactly 4 bits</strong>.</p>
+        <div class="example-box">
+          <div class="ex-title">Example</div>
+          <div class="formula-box">3A₁₆
+
+3       A
+0011   1010
+= 00111010₂</div>
+        </div>
+      </div>
+    </div>
+    <div class="danger-box">✗ 3₁₆ = 11 binary — WRONG (only 2 bits)<br>✓ 3₁₆ = 0011 binary (always 4 bits per hex digit)</div>
+  </div>
+
+  <!-- Binary Addition -->
+  <div class="card" style="border-color:var(--accent4);">
+    <div class="card-title"><span class="badge badge-yellow">TOPIC 7</span> Binary Addition ⚠️</div>
+    <p>Like decimal addition but carry happens at 2 instead of 10.</p>
+
+    <div class="formula-box" style="border-color:#e3b341; background:#1a1208; color:#e3b341;">THE 4 RULES:
+  0 + 0 = 0
+  0 + 1 = 1
+  1 + 0 = 1
+  1 + 1 = 0,  carry 1   ← KEY RULE
+  1 + 1 + 1 = 1,  carry 1</div>
+
+    <div class="example-box">
+      <div class="ex-title">Worked Example — Add 1011 + 0110</div>
+      <div class="formula-box">  1011   (= 11 decimal)
++ 0110   (=  6 decimal)
+──────
+Right to left:
+  1+0     = 1
+  1+1     = 0, carry 1
+  0+1+1   = 0, carry 1
+  1+0+1   = 0, carry 1, carry out
+
+= 10001₂  (= 17 decimal ✓, since 11+6=17)</div>
+    </div>
+
+    <div class="danger-box">✗ Forgetting to carry the 1 when 1+1 occurs<br>✓ Work RIGHT TO LEFT. Every time you get 1+1, write 0 and carry 1 to next column.</div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> Add 1010 + 0111<br>
+      <span class="green">= 10001₂ (10+7=17✓)</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> Add 1111 + 0001<br>
+      <span class="green">= 10000₂ (15+1=16✓)</span></p>
+    </div>
+  </div>
+
+  <!-- Integer Representation -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">TOPIC 8</span> Signed Integer Representation</div>
+    <div class="grid-3">
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="blue">Sign & Magnitude</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Leftmost bit = sign (0=+, 1=−). Rest = magnitude.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">+7 in 8-bit:
+00000111
+
+-7 in 8-bit:
+10000111</div>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="highlight">1's Complement</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">Flip ALL bits (0→1, 1→0).</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">7  = 00000111
+1's = 11111000</div>
+      </div>
+      <div style="padding:12px; background:var(--surface2); border-radius:8px;">
+        <strong class="green">2's Complement ⚠️</strong>
+        <p style="font-size:0.85rem; margin-top:6px;">1's complement + 1. Most common.</p>
+        <div class="formula-box" style="font-size:0.82rem; margin-top:8px;">7  = 00000111
+1's = 11111000
++1  = 11111001 ← -7</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ UNIT 3 ═══════════ -->
+<div id="unit3" class="section">
+  <h2 class="section-title">🟣 Unit 3: Common Digital Components</h2>
+
+  <!-- ICs -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-purple">TOPIC 9</span> Integrated Circuits (IC)</div>
+    <p>A tiny silicon chip containing many gates. Classified by number of gates inside.</p>
+    <table class="nice" style="margin-top:12px;">
+      <tr><th>Type</th><th>Gates</th><th>Examples</th></tr>
+      <tr><td class="blue"><strong>SSI</strong> (Small Scale)</td><td>&lt; 10</td><td>Basic gates (AND, OR, NOT)</td></tr>
+      <tr><td class="highlight"><strong>MSI</strong> (Medium Scale)</td><td>10–200</td><td>Decoders, Adders, Registers</td></tr>
+      <tr><td class="green"><strong>LSI</strong> (Large Scale)</td><td>200–thousands</td><td>Memory chips, processors</td></tr>
+      <tr><td class="purple"><strong>VLSI</strong> (Very Large Scale)</td><td>Thousands+</td><td>Microprocessors, complex chips</td></tr>
+    </table>
+    <div class="note-box" style="margin-top:10px;">Logic families: TTL (standard) · ECL (fastest) · MOS (dense) · CMOS (lowest power — most common today)</div>
+  </div>
+
+  <!-- Decoder -->
+  <div class="card" style="border-color:var(--accent);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">TOPIC 10</span>
+      &nbsp;Decoder (2-to-4) ⚠️
+    </div>
+    <p><strong>N binary inputs → 2ᴺ output lines.</strong> Exactly ONE output = 1 at any time. All others = 0.</p>
+    <div class="note-box">Analogy: A building with 4 apartments. You press apartment number (00,01,10,11) and ONLY that doorbell rings. Others stay silent.</div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div>
+        <h3 class="sub-title">2-to-4 Truth Table</h3>
+        <table class="nice">
+          <tr><th>A₁</th><th>A₀</th><th>Y₃</th><th>Y₂</th><th>Y₁</th><th>Y₀</th></tr>
+          <tr><td>0</td><td>0</td><td class="truth-0">0</td><td class="truth-0">0</td><td class="truth-0">0</td><td class="truth-1">1</td></tr>
+          <tr><td>0</td><td>1</td><td class="truth-0">0</td><td class="truth-0">0</td><td class="truth-1">1</td><td class="truth-0">0</td></tr>
+          <tr><td>1</td><td>0</td><td class="truth-0">0</td><td class="truth-1">1</td><td class="truth-0">0</td><td class="truth-0">0</td></tr>
+          <tr><td>1</td><td>1</td><td class="truth-1">1</td><td class="truth-0">0</td><td class="truth-0">0</td><td class="truth-0">0</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 class="sub-title">Boolean Expressions</h3>
+        <div class="formula-box">Y₀ = Ā₁ · Ā₀ · E
+Y₁ = Ā₁ · A₀ · E
+Y₂ = A₁ · Ā₀ · E
+Y₃ = A₁ · A₀ · E
+
+(E = Enable, must be 1)</div>
+        <p style="font-size:0.85rem; margin-top:8px; color:var(--text-muted);">Built with: NOT gates + AND gates</p>
+      </div>
+    </div>
+
+    <div class="danger-box" style="margin-top:12px;">
+      ✗ Multiple outputs can be 1 at the same time — WRONG<br>
+      ✓ Only ONE output = 1 at any time<br>
+      ✗ Forgetting Enable E — decoder only works when E=1
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> A₁=1, A₀=0. Which output is active?<br>
+      <span class="green">A₁A₀=10 → Y₂ is active (Y₂=1, all others=0)</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> How many outputs does a 3-to-8 decoder have?<br>
+      <span class="green">2³ = 8 output lines</span></p>
+      <hr class="divider">
+      <p><strong>Q3.</strong> Write the Boolean expression for Y₃.<br>
+      <span class="green">Y₃ = A₁ · A₀ · E</span></p>
+    </div>
+  </div>
+
+  <!-- MUX -->
+  <div class="card" style="border-color:var(--accent3);">
+    <div class="card-title" style="font-size:1.1rem;">
+      <span style="background:var(--accent3); color:#000; padding:3px 10px; border-radius:6px; font-weight:700;">TOPIC 11 ⭐</span>
+      &nbsp;Multiplexer — 4-to-1 MUX ⚠️⚠️ MOST IMPORTANT
+    </div>
+    <p><strong>2ᴺ data inputs + N select lines → 1 output.</strong> Select lines choose WHICH input passes to the output.</p>
+    <div class="note-box">Analogy: A TV with 4 channels. The remote (select lines) picks which channel appears on screen. Only one plays at a time.</div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div>
+        <h3 class="sub-title">4-to-1 MUX Truth Table</h3>
+        <table class="nice">
+          <tr><th>S₁</th><th>S₀</th><th>Output F</th></tr>
+          <tr><td>0</td><td>0</td><td class="truth-1">D₀ passes through</td></tr>
+          <tr><td>0</td><td>1</td><td class="truth-1">D₁ passes through</td></tr>
+          <tr><td>1</td><td>0</td><td class="truth-1">D₂ passes through</td></tr>
+          <tr><td>1</td><td>1</td><td class="truth-1">D₃ passes through</td></tr>
+        </table>
+        <div class="note-box" style="margin-top:10px;">Shortcut: convert S₁S₀ to decimal → that's the D index.<br>00=0→D₀ | 01=1→D₁ | 10=2→D₂ | 11=3→D₃</div>
+      </div>
+      <div>
+        <h3 class="sub-title">Full Boolean Expression</h3>
+        <div class="formula-box">F = (S̄₁·S̄₀·D₀)
+  + (S̄₁·S₀·D₁)
+  + (S₁·S̄₀·D₂)
+  + (S₁·S₀·D₃)
+
+Each term = select condition AND data input.
+Only the selected term passes; others = 0.</div>
+      </div>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Step-by-Step — What happens when S₁=0, S₀=1?</div>
+      <div class="formula-box">Term 1: S̄₁·S̄₀·D₀ = 1·0·D₀ = 0  ← blocked
+Term 2: S̄₁·S₀·D₁ = 1·1·D₁ = D₁ ← PASSES THROUGH
+Term 3: S₁·S̄₀·D₂ = 0·0·D₂ = 0  ← blocked
+Term 4: S₁·S₀·D₃ = 0·1·D₃ = 0  ← blocked
+
+F = 0 + D₁ + 0 + 0 = D₁  ✓</div>
+    </div>
+
+    <div class="danger-box">
+      ✗ Confusing MUX with Decoder:<br>
+      &nbsp;&nbsp;Decoder → activates one OUTPUT<br>
+      &nbsp;&nbsp;MUX → selects one INPUT to pass to output<br>
+      ✗ S₁S₀=10 selects D₁ — WRONG<br>
+      ✓ S₁S₀=10 → binary 10=2 → selects D₂
+    </div>
+
+    <div class="example-box">
+      <div class="ex-title">Practice Questions</div>
+      <p><strong>Q1.</strong> S₁=1, S₀=1. Which input is selected? If D₃=0, what is F?<br>
+      <span class="green">S₁S₀=11 → binary 11=3 → D₃ selected → F=D₃=0</span></p>
+      <hr class="divider">
+      <p><strong>Q2.</strong> D₀=1,D₁=0,D₂=1,D₃=0. S₁=0,S₀=0. What is F?<br>
+      <span class="green">S₁S₀=00 → D₀ selected → F=D₀=1</span></p>
+      <hr class="divider">
+      <p><strong>Q3.</strong> Write only the D₂ term in the MUX expression.<br>
+      <span class="green">S₁·S̄₀·D₂ (S₁=1,S₀=0 selects D₂)</span></p>
+    </div>
+  </div>
+
+  <!-- DEMUX -->
+  <div class="card" style="border-color:var(--accent4);">
+    <div class="card-title"><span class="badge badge-yellow">TOPIC 12</span> Demultiplexer (DEMUX)</div>
+    <p><strong>1 input → 2ᴺ outputs.</strong> Opposite of MUX. Select lines decide which output receives the input.</p>
+    <div class="note-box">Analogy: A train arriving at a station. The track switch (select lines) decides which platform (output) the train goes to. Only one platform receives it.</div>
+
+    <div class="formula-box" style="margin-top:12px;">1-to-4 DEMUX:
+  1 data input
+  S₁, S₀ select lines  →  4 outputs: F₀, F₁, F₂, F₃
+
+S₁S₀=00 → input routes to F₀
+S₁S₀=01 → input routes to F₁
+S₁S₀=10 → input routes to F₂
+S₁S₀=11 → input routes to F₃</div>
+
+    <table class="nice" style="margin-top:12px;">
+      <tr><th></th><th>MUX</th><th>DEMUX</th></tr>
+      <tr><td>Direction</td><td>Many inputs → 1 output</td><td>1 input → Many outputs</td></tr>
+      <tr><td>Used together?</td><td colspan="2">Yes — MUX sends, DEMUX receives at the other end</td></tr>
+    </table>
+  </div>
+
+  <!-- Registers -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">TOPIC 13</span> Registers &amp; Flip-Flops</div>
+    <div class="grid-2">
+      <div>
+        <h3 class="sub-title">Register</h3>
+        <p>A group of flip-flops working together to store multiple bits.</p>
+        <div class="formula-box">1 flip-flop = 1 bit stored
+4 flip-flops = 4-bit register
+8 flip-flops = 8-bit register (1 byte)</div>
+        <h3 class="sub-title">Shift Register</h3>
+        <p>Data moves one bit at a time per clock pulse. All flip-flops share a common clock.</p>
+        <div class="formula-box">Before:           [1][0][1][1]
+After 1 right shift: [0][1][0][1]</div>
+      </div>
+      <div>
+        <h3 class="sub-title">Flip-Flop Types ⚠️</h3>
+        <table class="nice">
+          <tr><th>Type</th><th>Inputs</th><th>Key Note</th></tr>
+          <tr><td class="blue"><strong>SR</strong></td><td>S, R</td><td class="invalid">S=R=1 is INVALID ⚠️</td></tr>
+          <tr><td class="green"><strong>D</strong></td><td>D</td><td>Output = last input. 1-bit memory.</td></tr>
+          <tr><td class="purple"><strong>JK</strong></td><td>J, K</td><td>Like SR but NO invalid state.</td></tr>
+        </table>
+        <div class="danger-box" style="margin-top:10px;">SR Flip-Flop: S=R=1 is UNDEFINED (∞) — this is a very common exam trap!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ REVISION ═══════════ -->
+<div id="revision" class="section">
+  <h2 class="section-title">📋 Quick Revision Sheet</h2>
+
+  <div class="rev-block">
+    <h3>BOOLEAN OPERATIONS — TRUTH TABLE SHORTCUTS</h3>
+    <div class="pills">
+      <span class="pill" style="background:#56d36422;color:var(--accent3);border-color:#56d36455;">AND: ALL=1 → 1</span>
+      <span class="pill" style="background:#1f6feb33;color:var(--accent);border-color:#1f6feb66;">OR: ANY=1 → 1</span>
+      <span class="pill" style="background:#f7816622;color:var(--accent2);border-color:#f7816655;">NAND: both=1 → 0</span>
+      <span class="pill" style="background:#bc8cff22;color:var(--accent5);border-color:#bc8cff55;">NOR: both=0 → 1</span>
+      <span class="pill" style="background:#e3b34122;color:var(--accent4);border-color:#e3b34155;">XOR: different → 1</span>
+    </div>
+  </div>
+
+  <div class="rev-block">
+    <h3>KEY BOOLEAN LAWS</h3>
+    <ul class="checklist">
+      <li><strong>A+0=A &nbsp; A·1=A</strong> — identity</li>
+      <li><strong>A+1=1 &nbsp; A·0=0</strong> — null</li>
+      <li><strong>A+Ā=1 &nbsp; A·Ā=0</strong> — complement</li>
+      <li><strong>A+A=A &nbsp; A·A=A</strong> — idempotent</li>
+      <li><strong>Ā̄=A</strong> — double NOT</li>
+      <li><strong>A+AB=A</strong> — absorption</li>
+    </ul>
+  </div>
+
+  <div class="rev-block" style="background:#1a1208; border-left:3px solid var(--accent4);">
+    <h3>DE MORGAN'S LAWS ⚠️⚠️ — FLIP THE OPERATOR, COMPLEMENT EACH</h3>
+    <ul class="checklist">
+      <li><strong>(A·B)̄ = Ā+B̄</strong> — flip · to +, complement each variable</li>
+      <li><strong>(A+B)̄ = Ā·B̄</strong> — flip + to ·, complement each variable</li>
+      <li><strong>(A+B+C)̄ = Ā·B̄·C̄</strong> — works for any number of variables</li>
+    </ul>
+  </div>
+
+  <div class="rev-block">
+    <h3>CONVERSIONS</h3>
+    <ul class="checklist">
+      <li><strong>Binary→Decimal:</strong> multiply each bit by 2^position, add all</li>
+      <li><strong>Decimal→Binary:</strong> divide by 2, read remainders BOTTOM TO TOP</li>
+      <li><strong>Binary→Hex:</strong> group 4 bits from right, convert each group</li>
+      <li><strong>Hex→Binary:</strong> expand each hex digit to exactly 4 bits</li>
+      <li><strong>Powers of 2:</strong> 1, 2, 4, 8, 16, 32, 64, 128</li>
+    </ul>
+  </div>
+
+  <div class="rev-block">
+    <h3>BINARY ADDITION</h3>
+    <ul class="checklist">
+      <li>0+0=0 &nbsp; 0+1=1 &nbsp; 1+0=1</li>
+      <li><strong>1+1=0 carry 1</strong> — KEY RULE</li>
+      <li><strong>1+1+1=1 carry 1</strong></li>
+      <li>Always work RIGHT TO LEFT</li>
+    </ul>
+  </div>
+
+  <div class="rev-block" style="border-left:3px solid var(--accent);">
+    <h3>DECODER (2-to-4)</h3>
+    <p style="font-size:0.9rem;">N inputs → 2ᴺ outputs. ONE output active at a time (the others = 0).</p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">Y₀=Ā₁Ā₀E &nbsp; Y₁=Ā₁A₀E &nbsp; Y₂=A₁Ā₀E &nbsp; Y₃=A₁A₀E &nbsp; | &nbsp; Built with: NOT + AND gates</p>
+  </div>
+
+  <div class="rev-block" style="background:#0a2010; border-left:3px solid var(--accent3);">
+    <h3 style="color:var(--accent3);">MUX (4-to-1) ⭐ MOST IMPORTANT</h3>
+    <p style="font-size:0.9rem;"><strong>F = S̄₁S̄₀D₀ + S̄₁S₀D₁ + S₁S̄₀D₂ + S₁S₀D₃</strong></p>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">S₁S₀: 00→D₀ | 01→D₁ | 10→D₂ | 11→D₃ &nbsp;|&nbsp; Shortcut: S₁S₀ binary = index of D selected</p>
+  </div>
+
+  <div class="rev-block">
+    <h3>DEMUX &amp; REGISTERS</h3>
+    <ul class="checklist">
+      <li><strong>DEMUX:</strong> 1 input → many outputs (opposite of MUX)</li>
+      <li><strong>Register:</strong> group of flip-flops = multi-bit storage</li>
+      <li><strong>SR Flip-Flop:</strong> S=R=1 is INVALID (∞) ⚠️</li>
+      <li><strong>D Flip-Flop:</strong> output = last input (1-bit memory)</li>
+      <li><strong>JK Flip-Flop:</strong> like SR but no invalid state</li>
+    </ul>
+  </div>
+
+  <div class="card" style="background:#0a2010; border-color:var(--accent3); margin-top:20px;">
+    <div class="card-title" style="color:var(--accent3);">⚡ Decoder vs MUX vs DEMUX — Full Comparison</div>
+    <table class="nice">
+      <tr><th></th><th>Decoder</th><th>Multiplexer (MUX)</th><th>Demultiplexer (DEMUX)</th></tr>
+      <tr><td><strong>Inputs</strong></td><td>N binary lines</td><td>2ᴺ data + N select</td><td>1 data + N select</td></tr>
+      <tr><td><strong>Outputs</strong></td><td>2ᴺ lines</td><td>1 output</td><td>2ᴺ lines</td></tr>
+      <tr><td><strong>Direction</strong></td><td>N → 2ᴺ</td><td>2ᴺ → 1 (many to one)</td><td>1 → 2ᴺ (one to many)</td></tr>
+      <tr><td><strong>What it does</strong></td><td>Activates one output</td><td>Selects one input to pass</td><td>Routes input to one output</td></tr>
+      <tr><td><strong>Gates</strong></td><td>NOT + AND</td><td>AND + OR + NOT</td><td>AND + NOT</td></tr>
+      <tr><td><strong>Analogy</strong></td><td>Apartment doorbell</td><td>TV channel selector</td><td>Train track switch</td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="border-color:var(--accent2); margin-top:4px;">
+    <div class="card-title">⚠️ Common Exam Traps</div>
+    <ul class="xlist">
+      <li>De Morgan's: (A+B)̄ ≠ Ā+B̄ — you must flip the operator too</li>
+      <li>A+A = 2A — WRONG. Boolean: A+A = A (idempotent)</li>
+      <li>Decimal→Binary: reading remainders TOP to BOTTOM gives wrong answer</li>
+      <li>Binary→Hex: 3₁₆ = 0011 (4 bits), not just 11 (2 bits)</li>
+      <li>MUX: S₁S₀=10 selects D₂ (not D₁) — convert to decimal first</li>
+      <li>Decoder: only ONE output = 1 at a time, not multiple</li>
+      <li>SR Flip-Flop: S=R=1 is INVALID (undefined output ∞)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ SELF-TEST ═══════════ -->
+<div id="test" class="section">
+  <h2 class="section-title">✏️ Self-Assessment — 5 Questions (Easy → Hard)</h2>
+  <p style="color:var(--text-muted); margin-bottom:20px;">Attempt each question before revealing the solution.</p>
+
+  <div class="question-card">
+    <div class="q-number">Question 1 · Easy · Boolean Laws &amp; De Morgan's</div>
+    <div class="q-text">
+      (a) Apply De Morgan's theorem to: <strong>(A + B + C)̄</strong><br>
+      (b) Simplify using Boolean laws: <strong>A·B + A·B̄</strong>
+    </div>
+    <textarea class="answer-area" placeholder="Write your answer here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol1')">Show Solution</button>
+    <div id="sol1" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <ol style="margin-top:10px; padding-left:20px; line-height:2.2;">
+        <li><strong>(A+B+C)̄ = Ā·B̄·C̄</strong> — flip + to ·, complement each variable</li>
+        <li><strong>A·B + A·B̄ = A·(B+B̄) = A·1 = A</strong> — factor, complement law, identity</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-number">Question 2 · Easy-Medium · Number Conversion</div>
+    <div class="q-text">
+      (a) Convert <strong>110101₂</strong> to decimal.<br>
+      (b) Convert <strong>53₁₀</strong> to binary. Verify your answer.
+    </div>
+    <textarea class="answer-area" placeholder="Show all steps..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol2')">Show Solution</button>
+    <div id="sol2" class="solution-reveal">
+      <strong class="green">Part (a) — 110101₂ to decimal:</strong>
+      <div class="formula-box" style="margin-top:10px;">= 1×32 + 1×16 + 0×8 + 1×4 + 0×2 + 1×1
+= 32 + 16 + 0 + 4 + 0 + 1
+= 53₁₀  ✓</div>
+      <strong class="green">Part (b) — 53₁₀ to binary:</strong>
+      <div class="formula-box" style="margin-top:10px;">53÷2=26 r1
+26÷2=13 r0
+13÷2= 6 r1
+ 6÷2= 3 r0
+ 3÷2= 1 r1
+ 1÷2= 0 r1
+
+Read bottom to top: 110101₂  ✓ (matches part a)</div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-number">Question 3 · Medium · Boolean Simplification</div>
+    <div class="q-text">
+      Simplify: <strong>A·B + A·B̄ + Ā·B</strong><br>
+      Show every step and state which law you used.
+    </div>
+    <textarea class="answer-area" placeholder="Show every step with law names..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol3')">Show Solution</button>
+    <div id="sol3" class="solution-reveal">
+      <strong class="green">Solution:</strong>
+      <div class="formula-box" style="margin-top:10px;">A·B + A·B̄ + Ā·B
+= A·(B + B̄) + Ā·B        ← distributive (factor A)
+= A·1 + Ā·B               ← complement law (B+B̄=1)
+= A + Ā·B                 ← identity law (A·1=A)
+= (A + Ā)·(A + B)         ← distributive (reverse)
+= 1·(A + B)               ← complement law (A+Ā=1)
+= A + B                   ← identity law (1·x=x)</div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-number">Question 4 · Medium · 2-to-4 Decoder</div>
+    <div class="q-text">
+      (a) Complete the full truth table for a 2-to-4 decoder (assume E=1).<br>
+      (b) Write the Boolean expression for each output Y₀, Y₁, Y₂, Y₃.<br>
+      (c) If A₁=1, A₀=1 — which output is active?
+    </div>
+    <textarea class="answer-area" placeholder="Write truth table and expressions..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol4')">Show Solution</button>
+    <div id="sol4" class="solution-reveal">
+      <strong class="green">Part (a) — Truth Table:</strong>
+      <table class="nice" style="margin-top:10px;">
+        <tr><th>A₁</th><th>A₀</th><th>Y₃</th><th>Y₂</th><th>Y₁</th><th>Y₀</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+        <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+        <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+        <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+      </table>
+      <strong class="green" style="display:block; margin-top:12px;">Part (b) — Expressions:</strong>
+      <div class="formula-box" style="margin-top:8px;">Y₀ = Ā₁·Ā₀·E
+Y₁ = Ā₁·A₀·E
+Y₂ = A₁·Ā₀·E
+Y₃ = A₁·A₀·E</div>
+      <strong class="green" style="display:block; margin-top:10px;">Part (c):</strong>
+      <p style="margin-top:6px;">A₁=1, A₀=1 → <strong>Y₃ is active</strong> (Y₃=1, all others=0)</p>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-number">Question 5 · Hard · 4-to-1 Multiplexer</div>
+    <div class="q-text">
+      (a) Write the full Boolean expression for a 4-to-1 MUX output F.<br>
+      (b) Given: D₀=0, D₁=1, D₂=0, D₃=1. S₁=1, S₀=0. What is F?<br>
+      (c) Which select combination S₁S₀ would give F = D₃?
+    </div>
+    <textarea class="answer-area" placeholder="Write your answer here..."></textarea>
+    <button class="reveal-btn" onclick="reveal('sol5')">Show Solution</button>
+    <div id="sol5" class="solution-reveal">
+      <strong class="green">Part (a) — Boolean Expression:</strong>
+      <div class="formula-box" style="margin-top:10px;">F = (S̄₁·S̄₀·D₀) + (S̄₁·S₀·D₁) + (S₁·S̄₀·D₂) + (S₁·S₀·D₃)</div>
+      <strong class="green" style="display:block; margin-top:12px;">Part (b) — Find F:</strong>
+      <div class="formula-box" style="margin-top:8px;">S₁=1, S₀=0 → binary 10 = 2 → D₂ is selected
+D₂ = 0
+F = D₂ = 0</div>
+      <strong class="green" style="display:block; margin-top:10px;">Part (c):</strong>
+      <p style="margin-top:6px;">To select D₃ → index 3 → binary 11 → <strong>S₁=1, S₀=1</strong></p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<div class="footer">
+  <div style="margin-bottom:12px;">
+    <span style="background:#1f6feb33;color:#58a6ff;border:1px solid #1f6feb66;border-radius:20px;padding:4px 14px;font-size:0.78rem;font-weight:700;margin:0 4px;">Unit 1 — Boolean Algebra</span>
+    <span style="background:#56d36422;color:#56d364;border:1px solid #56d36455;border-radius:20px;padding:4px 14px;font-size:0.78rem;font-weight:700;margin:0 4px;">Unit 2 — Number Systems</span>
+    <span style="background:#bc8cff22;color:#bc8cff;border:1px solid #bc8cff55;border-radius:20px;padding:4px 14px;font-size:0.78rem;font-weight:700;margin:0 4px;">Unit 3 — Digital Components</span>
+  </div>
+  <strong>Made by Tera</strong> &nbsp;·&nbsp; <strong style="color:#bc8cff;">HHC Developers Club</strong> &nbsp;·&nbsp; Ambo University<br>
+  <span style="margin-top:6px; display:block;">Department of Computer Science &nbsp;·&nbsp; 2nd Year &nbsp;·&nbsp; Digital Logic Design</span>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+function reveal(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+  el.previousElementSibling.textContent = el.classList.contains('show') ? 'Hide Solution' : 'Show Solution';
+}
+</script>
+</body>
+</html>
