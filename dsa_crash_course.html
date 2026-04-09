@@ -298,6 +298,75 @@
   .complexity-best   { color: var(--accent3); font-weight: 700; }
   .complexity-avg    { color: var(--accent4); font-weight: 600; }
   .complexity-worst  { color: var(--accent2); font-weight: 600; }
+
+  /* ── Practice Lab ── */
+  .lab-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 16px; }
+  @media(max-width:900px){ .lab-grid{grid-template-columns:1fr;} }
+  .lab-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .lab-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  .lab-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 10px;
+    min-width: 260px;
+    outline: none;
+  }
+  .lab-btn {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all .15s;
+    font-weight: 600;
+    font-size: 0.88rem;
+  }
+  .lab-btn.primary { border-color: var(--accent); color: var(--accent); }
+  .lab-btn.primary:hover { background: var(--accent); color: #000; }
+  .lab-btn:hover { background: #ffffff0d; }
+  .lab-editor {
+    width: 100%;
+    min-height: 380px;
+    resize: vertical;
+    background: #0b1220;
+    border: 1px solid #1f4068;
+    border-radius: 12px;
+    padding: 12px 12px;
+    color: #c9d1d9;
+    font-family: Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    outline: none;
+  }
+  .lab-output {
+    background: #0a1628;
+    border: 1px solid #1f4068;
+    border-radius: 12px;
+    padding: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 160px;
+    font-family: Consolas, monospace;
+    font-size: 0.88rem;
+    color: #9ddcff;
+  }
+  .lab-hint {
+    background: #111827;
+    border-left: 3px solid var(--accent4);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 14px;
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
 </style>
 </head>
 <body>
@@ -306,7 +375,7 @@
 <div class="hero">
   <div class="hero-left">
     <h1>🖥️ Data Structures &amp; Algorithms — Crash Course</h1>
-    <p>Chapter 1.1: Data Structures &nbsp;·&nbsp; Chapter 1.2: Algorithm Concepts &nbsp;·&nbsp; Chapter 2: Sorting &amp; Searching</p>
+    <p>Chapter 1.1: Data Structures &nbsp;·&nbsp; Chapter 1.2: Algorithm Concepts &nbsp;·&nbsp; Chapter 2: Sorting &amp; Searching &nbsp;·&nbsp; Chapter 3: Linked List</p>
     <p style="margin-top:4px;">Exam-Focused · Zero to Ready · Personal Study Edition</p>
   </div>
   <div class="made-by">
@@ -323,6 +392,8 @@
   <div class="tab" onclick="switchTab('ch12',this)">⚙️ Ch1.2: Algorithms</div>
   <div class="tab" onclick="switchTab('sorting',this)">🔀 Ch2: Sorting</div>
   <div class="tab" onclick="switchTab('searching',this)">🔍 Ch2: Searching</div>
+  <div class="tab" onclick="switchTab('linkedlist',this)">🧷 Ch3: Linked List</div>
+  <div class="tab" onclick="switchTab('practice',this)">🧪 Practice Lab</div>
   <div class="tab" onclick="switchTab('revision',this)">📋 Quick Revision</div>
   <div class="tab" onclick="switchTab('test',this)">✏️ Self-Test</div>
 </div>
@@ -1072,6 +1143,124 @@ Data:       unchanged ✓</div>
   </div>
 </div>
 
+<!-- ────────────────── CH 3 LINKED LIST ────────────────── -->
+<div id="linkedlist" class="section">
+  <h2 class="section-title">🧷 Chapter 3: Linked List</h2>
+
+  <div class="card" style="border-color: var(--accent5); background: linear-gradient(135deg, #161b22, #1a1530);">
+    <div class="card-title" style="font-size:1.05rem;">📄 Chapter PDF (Embedded)</div>
+    <p style="color:var(--text-muted); margin-bottom:12px;">
+      If the embed does not load, use the download/open link below.
+    </p>
+    <div class="pills" style="margin-bottom:12px;">
+      <a class="pill" href="Chapter 3 Linked List.pdf" target="_blank"
+         style="text-decoration:none; background:#bc8cff22; color:var(--accent5); border-color:#bc8cff55;">
+        Open / Download: Chapter 3 Linked List.pdf
+      </a>
+    </div>
+    <iframe src="Chapter 3 Linked List.pdf" title="Chapter 3 Linked List PDF"
+            style="width:100%; height:620px; border:1px solid var(--border); border-radius:12px; background:var(--surface2);"></iframe>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">CONCEPT</span> What is a Linked List?</div>
+    <p>A <strong>linked list</strong> is a <strong>linear</strong>, <strong>dynamic</strong> data structure made of <strong>nodes</strong>.</p>
+    <div class="formula-box">Each node contains:
+1) data/value
+2) link/pointer to the next node (and possibly previous)</div>
+    <div class="note-box">Unlike arrays, nodes in a linked list are <strong>not stored in contiguous memory</strong>. Each node points to the next.</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-yellow">REVIEW</span> Pointer Basics (C++)</div>
+      <div class="formula-box">int var = 5;
+int* p = &var;     // p stores address of var
+cout << *p;        // dereference → prints 5</div>
+      <div class="warn-box"><strong>Remember:</strong> <code>p</code> (address) and <code>*p</code> (value at that address) are different.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">REVIEW</span> Dynamic Memory (C++)</div>
+      <div class="formula-box">int* p = new int(25);   // allocate one int on heap
+delete p;               // free it
+
+int* arr = new int[10]; // allocate array
+delete[] arr;           // free array</div>
+      <div class="danger-box">Always match <code>new</code> with <code>delete</code>, and <code>new[]</code> with <code>delete[]</code>.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="badge badge-green">TYPES</span> Types of Linked List</div>
+    <table class="nice">
+      <tr><th>Type</th><th>Links per node</th><th>Traversal</th><th>Key idea</th></tr>
+      <tr><td><strong>Singly Linked List (SLL)</strong></td><td>1 (next)</td><td>Forward only</td><td>Tail next = NULL</td></tr>
+      <tr><td><strong>Doubly Linked List (DLL)</strong></td><td>2 (prev, next)</td><td>Forward &amp; backward</td><td>Extra memory for <code>prev</code></td></tr>
+      <tr><td><strong>Circular Linked List (CLL)</strong></td><td>1 (next) (or 2)</td><td>Loops</td><td>Tail next points back to head</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="badge badge-blue">SLL</span> Node + Basic Print (C++ style)</div>
+    <div class="formula-box">class Node {
+public:
+  int data;
+  Node* next;
+};
+
+void PrintNode(Node* node){
+  while(node != NULL){
+    cout << node->data << " -> ";
+    node = node->next;
+  }
+  cout << "NULL" << endl;
+}</div>
+    <div class="note-box">Common operations: insert (head/end/index), delete, traverse/display, search, count.</div>
+  </div>
+
+  <div class="card" style="border-color: var(--accent4);">
+    <div class="card-title"><span class="badge badge-yellow">ASSIGNMENT</span> Practice Topics (from the PDF)</div>
+    <ul class="checklist">
+      <li>Count number of nodes in a Linked List (with example)</li>
+      <li>Search an element in a Linked List (with example)</li>
+      <li>Sort elements of a Linked List (with example)</li>
+      <li>Add/Insert data in a Linked List (with example)</li>
+    </ul>
+    <div class="note-box">Use the <strong>Practice Lab</strong> tab to actually code these and auto-check your answers.</div>
+  </div>
+</div>
+
+<!-- ────────────────── PRACTICE LAB ────────────────── -->
+<div id="practice" class="section">
+  <h2 class="section-title">🧪 Practice Lab — Linked List Coding</h2>
+  <p style="color:var(--text-muted); margin-bottom:18px;">
+    Write JavaScript solutions for linked list tasks and click <strong>Run &amp; Check</strong>. The page will execute tests locally in your browser.
+  </p>
+
+  <div class="lab-grid">
+    <div class="lab-panel">
+      <div class="card-title" style="margin-bottom:10px;">Choose Exercise</div>
+      <select id="labExercise" class="lab-select" onchange="labLoadExercise(this.value)"></select>
+      <div class="lab-controls">
+        <button class="lab-btn primary" onclick="labRun()">Run &amp; Check</button>
+        <button class="lab-btn" onclick="labReset()">Reset Code</button>
+        <button class="lab-btn" onclick="labShowSolution()">Show Solution</button>
+      </div>
+      <div id="labPrompt" class="lab-hint"></div>
+      <div class="lab-hint" style="border-left-color: var(--accent); margin-top:12px;">
+        <strong class="blue">Note:</strong> Your code should define the required function name shown in the prompt (example: <code>countNodes</code>).
+      </div>
+    </div>
+
+    <div class="lab-panel">
+      <div class="card-title" style="margin-bottom:10px;">Code Editor</div>
+      <textarea id="labCode" class="lab-editor" spellcheck="false"></textarea>
+      <div class="card-title" style="margin-top:14px;">Output</div>
+      <div id="labOutput" class="lab-output">Select an exercise, then click “Run &amp; Check”.</div>
+    </div>
+  </div>
+</div>
+
 <!-- ────────────────── REVISION ────────────────── -->
 <div id="revision" class="section">
   <h2 class="section-title">📋 Quick Revision Sheet</h2>
@@ -1308,7 +1497,7 @@ i=4: key=5. 9>5→shift, 7>5→shift, 2<5→stop → [1, 2, 5, 7, 9]  ✓</div>
 <!-- ── Footer ── -->
 <div class="footer">
   <strong>Made by Tera</strong> &nbsp;·&nbsp; HHC Developers Club &nbsp;·&nbsp; Personal Study Edition<br>
-  <span style="margin-top:6px; display:block;">Data Structures &amp; Algorithms · Chapter 1.1 · Chapter 1.2 · Chapter 2</span>
+  <span style="margin-top:6px; display:block;">Data Structures &amp; Algorithms · Chapter 1.1 · Chapter 1.2 · Chapter 2 · Chapter 3</span>
 </div>
 
 <script>
@@ -1325,6 +1514,237 @@ function reveal(id) {
   const btn = el.previousElementSibling;
   btn.textContent = el.classList.contains('show') ? 'Hide Solution' : 'Show Solution';
 }
+
+// ────────────────── Practice Lab (Linked List) ──────────────────
+const LAB_EXERCISES = [
+  {
+    id: "count",
+    title: "Count Nodes (SLL)",
+    fnName: "countNodes",
+    promptHtml:
+      "<strong>Task:</strong> Implement <code>countNodes(head)</code> that returns the number of nodes in a singly linked list.<br><small>Input: head (Node or null). Output: number.</small>",
+    starterCode:
+`// You can use Node, buildList(array), listToArray(head)
+// Implement the function below:
+
+function countNodes(head) {
+  // TODO
+  return 0;
+}`,
+    solutionCode:
+`function countNodes(head) {
+  let count = 0;
+  let cur = head;
+  while (cur !== null) {
+    count++;
+    cur = cur.next;
+  }
+  return count;
+}`,
+    runTests: (fn, helpers) => {
+      const { buildList } = helpers;
+      helpers.assertEq(fn(null), 0, "empty list");
+      helpers.assertEq(fn(buildList([5])), 1, "one node");
+      helpers.assertEq(fn(buildList([1,2,3,4])), 4, "four nodes");
+    }
+  },
+  {
+    id: "search",
+    title: "Search Value (SLL)",
+    fnName: "search",
+    promptHtml:
+      "<strong>Task:</strong> Implement <code>search(head, target)</code> that returns <code>true</code> if target exists, else <code>false</code>.",
+    starterCode:
+`function search(head, target) {
+  // TODO
+  return false;
+}`,
+    solutionCode:
+`function search(head, target) {
+  let cur = head;
+  while (cur !== null) {
+    if (cur.data === target) return true;
+    cur = cur.next;
+  }
+  return false;
+}`,
+    runTests: (fn, helpers) => {
+      const { buildList } = helpers;
+      helpers.assertEq(fn(null, 3), false, "empty list");
+      helpers.assertEq(fn(buildList([7, 14, 21]), 14), true, "found in middle");
+      helpers.assertEq(fn(buildList([7, 14, 21]), 99), false, "not found");
+    }
+  },
+  {
+    id: "insertEnd",
+    title: "Insert At End (SLL)",
+    fnName: "insertAtEnd",
+    promptHtml:
+      "<strong>Task:</strong> Implement <code>insertAtEnd(head, value)</code> that returns the (possibly new) head after appending value at the end.",
+    starterCode:
+`function insertAtEnd(head, value) {
+  // TODO: return head of the list after inserting value at the end
+  return head;
+}`,
+    solutionCode:
+`function insertAtEnd(head, value) {
+  const node = new Node(value);
+  if (head === null) return node;
+  let cur = head;
+  while (cur.next !== null) cur = cur.next;
+  cur.next = node;
+  return head;
+}`,
+    runTests: (fn, helpers) => {
+      const { buildList, listToArray } = helpers;
+      helpers.assertArrEq(listToArray(fn(null, 10)), [10], "insert into empty");
+      helpers.assertArrEq(listToArray(fn(buildList([1,2]), 3)), [1,2,3], "append");
+      helpers.assertArrEq(listToArray(fn(buildList([9]), 8)), [9,8], "single node");
+    }
+  },
+  {
+    id: "reverse",
+    title: "Reverse List (SLL)",
+    fnName: "reverseList",
+    promptHtml:
+      "<strong>Task:</strong> Implement <code>reverseList(head)</code> that returns the new head after reversing the list.",
+    starterCode:
+`function reverseList(head) {
+  // TODO
+  return head;
+}`,
+    solutionCode:
+`function reverseList(head) {
+  let prev = null;
+  let cur = head;
+  while (cur !== null) {
+    const nxt = cur.next;
+    cur.next = prev;
+    prev = cur;
+    cur = nxt;
+  }
+  return prev;
+}`,
+    runTests: (fn, helpers) => {
+      const { buildList, listToArray } = helpers;
+      helpers.assertArrEq(listToArray(fn(null)), [], "empty");
+      helpers.assertArrEq(listToArray(fn(buildList([1]))), [1], "one");
+      helpers.assertArrEq(listToArray(fn(buildList([1,2,3]))), [3,2,1], "three");
+    }
+  }
+];
+
+let LAB_ACTIVE_ID = LAB_EXERCISES[0]?.id ?? null;
+let LAB_LAST_STARTER = "";
+
+function labInit() {
+  const sel = document.getElementById("labExercise");
+  if (!sel) return;
+  sel.innerHTML = LAB_EXERCISES.map(ex => `<option value="${ex.id}">${ex.title}</option>`).join("");
+  labLoadExercise(LAB_ACTIVE_ID);
+}
+
+function labLoadExercise(id) {
+  const ex = LAB_EXERCISES.find(e => e.id === id) || LAB_EXERCISES[0];
+  if (!ex) return;
+  LAB_ACTIVE_ID = ex.id;
+  const prompt = document.getElementById("labPrompt");
+  const code = document.getElementById("labCode");
+  const out = document.getElementById("labOutput");
+  prompt.innerHTML = ex.promptHtml;
+  code.value = ex.starterCode;
+  LAB_LAST_STARTER = ex.starterCode;
+  out.textContent = "Ready. Click “Run & Check”.";
+}
+
+function labReset() {
+  const code = document.getElementById("labCode");
+  const out = document.getElementById("labOutput");
+  code.value = LAB_LAST_STARTER;
+  out.textContent = "Code reset.";
+}
+
+function labShowSolution() {
+  const ex = LAB_EXERCISES.find(e => e.id === LAB_ACTIVE_ID);
+  const code = document.getElementById("labCode");
+  const out = document.getElementById("labOutput");
+  if (!ex) return;
+  code.value = ex.solutionCode;
+  out.textContent = "Solution loaded. Click “Run & Check” to verify.";
+}
+
+function labRun() {
+  const ex = LAB_EXERCISES.find(e => e.id === LAB_ACTIVE_ID);
+  const code = document.getElementById("labCode").value;
+  const out = document.getElementById("labOutput");
+  if (!ex) return;
+
+  const logLines = [];
+  const helpers = {
+    assertEq(actual, expected, label) {
+      if (actual !== expected) {
+        throw new Error(`${label}: expected ${expected}, got ${actual}`);
+      }
+      logLines.push(`✓ ${label}`);
+    },
+    assertArrEq(actual, expected, label) {
+      const a = JSON.stringify(actual);
+      const b = JSON.stringify(expected);
+      if (a !== b) {
+        throw new Error(`${label}: expected ${b}, got ${a}`);
+      }
+      logLines.push(`✓ ${label}`);
+    }
+  };
+
+  try {
+    // Provide a small linked list runtime to both the user code and tests.
+    const prelude =
+`"use strict";
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+function buildList(arr) {
+  let head = null;
+  let tail = null;
+  for (const v of arr) {
+    const n = new Node(v);
+    if (head === null) { head = n; tail = n; }
+    else { tail.next = n; tail = n; }
+  }
+  return head;
+}
+function listToArray(head, max = 10000) {
+  const out = [];
+  let cur = head;
+  let steps = 0;
+  while (cur !== null) {
+    out.push(cur.data);
+    cur = cur.next;
+    steps++;
+    if (steps > max) throw new Error("Possible cycle detected (too many steps).");
+  }
+  return out;
+}
+`;
+
+    const getFn = new Function(`${prelude}\n${code}\nreturn { Node, buildList, listToArray, fn: (typeof ${ex.fnName} === 'function' ? ${ex.fnName} : null) };`);
+    const env = getFn();
+    if (!env.fn) {
+      throw new Error(`Function "${ex.fnName}" not found. Make sure you defined: function ${ex.fnName}(...) { ... }`);
+    }
+
+    ex.runTests(env.fn, { ...helpers, buildList: env.buildList, listToArray: env.listToArray });
+    out.textContent = `✅ All tests passed!\n\n${logLines.join("\n")}`;
+  } catch (err) {
+    out.textContent = `❌ Tests failed.\n\n${String(err && err.message ? err.message : err)}`;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", labInit);
 </script>
 </body>
 </html>
